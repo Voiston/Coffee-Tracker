@@ -5,468 +5,311 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Caffeine Tracker Pro</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/924/924514.png">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
-            --bg: #FDFBFA;
-            --card-bg: #FFFFFF;
-            --primary: #6F4E37; /* Café */
-            --primary-light: #A67B5B;
-            --text-dark: #2D241E; /* Chocolat Noir */
-            --text-light: #8E7F76;
-            --shadow-soft: 0 10px 30px rgba(111, 78, 55, 0.08);
-            --shadow-btn: 0 4px 15px rgba(111, 78, 55, 0.15);
-            
-            --success: #66BB6A;
-            --warning: #FFA726;
-            --danger: #EF5350;
+            --bg: #0F0E0E; /* Noir Mat */
+            --card-bg: #1A1817; /* Brun très sombre */
+            --primary: #D2691E; /* Orange Cuivré / Chocolat */
+            --text-main: #E0E0E0;
+            --text-dim: #888888;
+            --accent: #FF4500;
+            --radius: 12px; /* Border radius plus faible */
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
-            color: var(--text-dark);
+            color: var(--text-main);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
-            -webkit-font-smoothing: antialiased;
-            padding-top: env(safe-area-inset-top);
         }
 
-        /* --- GLOBAL ELEMENTS --- */
-        button { border: none; font-family: inherit; cursor: pointer; transition: all 0.2s ease; touch-action: manipulation; }
-        button:active { transform: scale(0.97); opacity: 0.8; }
-        input { font-family: inherit; box-sizing: border-box; }
-
-        /* --- HERO SECTION --- */
+        /* --- HEADER DYNAMIQUE (JAUGE) --- */
         .hero {
-            width: 100%; max-width: 450px;
-            padding: 40px 20px 60px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white; text-align: center;
-            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
-            position: relative; box-shadow: var(--shadow-soft);
+            width: 100%;
+            padding: 50px 20px 40px;
+            background: #111; /* Fallback */
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+            border-bottom: 2px solid var(--primary);
+            transition: background 0.5s ease;
         }
 
-        .settings-icon {
+        /* L'effet de remplissage */
+        .hero-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(0deg, rgba(210, 105, 30, 0.3) 0%, rgba(210, 105, 30, 0) 100%);
+            transition: height 0.8s ease;
+            z-index: 1;
+        }
+
+        .hero-content { position: relative; z-index: 2; }
+
+        .settings-btn {
             position: absolute; top: 20px; right: 20px;
-            font-size: 1.6rem; opacity: 0.7; padding: 10px;
+            font-size: 1.2rem; cursor: pointer; opacity: 0.6;
         }
 
         #mg-display {
-            font-size: 4.8rem; font-weight: 800; display: block;
-            letter-spacing: -2px; line-height: 1; margin: 10px 0;
+            font-size: 4.5rem; font-weight: 900;
+            display: block; line-height: 1;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(210, 105, 30, 0.4);
         }
 
-        .hero small { opacity: 0.8; font-weight: 600; font-size: 0.85rem; letter-spacing: 1px; }
-
-        /* Sleep Badge */
         .sleep-status {
-            padding: 10px 20px; border-radius: 25px;
-            margin-top: 15px; display: inline-block;
-            font-weight: 700; font-size: 0.85rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: inline-block; padding: 6px 14px;
+            border-radius: var(--radius);
+            font-size: 0.75rem; font-weight: 800;
+            margin-top: 15px; text-transform: uppercase;
         }
-        .status-green { background-color: var(--success); color: white; }
-        .status-orange { background-color: var(--warning); color: white; }
-        .status-red { background-color: var(--danger); color: white; }
+        .status-green { background: #2E7D32; color: #A5D6A7; }
+        .status-orange { background: #E65100; color: #FFCCBC; }
+        .status-red { background: #B71C1C; color: #EF9A9A; }
 
-        /* --- CHART & HISTORY --- */
+        /* --- CONTENEUR --- */
         .main-container {
-            width: 90%; max-width: 400px;
-            margin-top: -30px; z-index: 5;
-            display: flex; flex-direction: column; gap: 20px;
-            padding-bottom: 120px; /* Space for FAB */
+            width: 92%; max-width: 400px;
+            padding: 20px 0 120px;
+            display: flex; flex-direction: column; gap: 15px;
         }
 
-        .chart-card {
-            background: var(--card-bg); border-radius: 25px;
-            padding: 20px; box-shadow: var(--shadow-soft);
-        }
-
-        .history-card {
-            background: var(--card-bg); border-radius: 25px;
-            padding: 20px; box-shadow: var(--shadow-soft);
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 18px;
+            border: 1px solid #2A2827;
         }
 
         .card-title {
-            font-size: 0.9rem; font-weight: 700; color: var(--text-light);
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block;
+            font-size: 0.7rem; font-weight: 800; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px; display: block;
         }
 
-        .history-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid #F5F0ED;
-            font-size: 0.95rem;
-        }
-        .history-item:last-child { border-bottom: none; }
-        .history-item-info strong { color: var(--text-dark); }
-        .history-item-info small { color: var(--text-light); }
-        .history-item-mg { font-weight: 700; color: var(--primary); }
-
-        /* --- FLOATING ACTION BUTTON (FAB) --- */
-        .fab-container {
-            position: fixed; bottom: 30px; left: 50%;
-            transform: translateX(-50%); z-index: 10;
-        }
-
-        .btn-add-main {
-            background: var(--text-dark); color: white;
-            padding: 18px 35px; border-radius: 50px;
-            font-size: 1.1rem; font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        /* --- BOUTON AJOUT --- */
+        .fab {
+            position: fixed; bottom: 30px;
+            background: var(--primary); color: white;
+            border: none; padding: 16px 32px;
+            border-radius: var(--radius);
+            font-weight: 900; font-size: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* --- MODALS (CENTERED) --- */
+        /* --- HISTORIQUE --- */
+        .history-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 0; border-bottom: 1px solid #2A2827;
+        }
+        .item-label { font-weight: 700; font-size: 0.9rem; }
+        .item-time { font-size: 0.75rem; color: var(--text-dim); }
+        .btn-delete { color: #555; font-size: 1.2rem; padding: 5px; cursor: pointer; }
+
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(45, 36, 30, 0.6); /* Chocolat transparent */
-            display: none; justify-content: center; align-items: center;
-            z-index: 100; backdrop-filter: blur(5px);
-            opacity: 0; transition: opacity 0.3s ease;
-            padding: 20px;
+            background: rgba(0,0,0,0.85); display: none;
+            justify-content: center; align-items: center; z-index: 100;
+            backdrop-filter: blur(8px);
         }
-        
-        .modal-overlay.show { display: flex; opacity: 1; }
-
         .modal {
-            background: var(--card-bg); width: 100%; max-width: 350px;
-            border-radius: 30px; padding: 30px;
-            box-sizing: border-box; box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            transform: scale(0.9); transition: transform 0.3s ease-out;
+            background: #1A1817; width: 85%; max-width: 320px;
+            padding: 25px; border-radius: var(--radius);
+            border: 1px solid var(--primary);
         }
-        
-        .modal-overlay.show .modal { transform: scale(1); }
-
-        .modal-title { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 25px; display: block; text-align: center; }
-
-        /* Preset Buttons */
-        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .opt-btn {
-            background: #F8F5F3; color: var(--text-dark);
-            padding: 20px; border-radius: 20px; font-weight: 700; text-align: center;
-            border: 2px solid transparent;
+            background: #2A2827; border: 1px solid #333; color: white;
+            padding: 15px; border-radius: var(--radius); font-weight: 800;
         }
-        .opt-btn small { display: block; opacity: 0.7; font-weight: 400; margin-top: 2px; }
-        
-        .opt-btn.active { border-color: var(--primary); background: #FDF7F2; color: var(--primary); }
-
-        /* Inputs */
-        .inputs-group { margin-bottom: 25px; }
-        .input-label { font-size: 0.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 8px; display: block; }
-        .inputs-row { display: flex; gap: 10px; }
+        .opt-btn.active { border-color: var(--primary); background: rgba(210, 105, 30, 0.1); }
         
         input {
-            background: #F8F5F3; color: var(--text-dark);
-            padding: 16px; border-radius: 15px; border: 1px solid #EEE;
-            font-size: 1rem; width: 100%; font-weight: 600;
-        }
-        input:focus { outline: none; border-color: var(--primary-light); background: white; }
-
-        /* Action Buttons */
-        .btn-save {
-            background: var(--primary); color: white;
-            width: 100%; padding: 18px; border-radius: 18px;
-            font-size: 1.1rem; font-weight: 700; box-shadow: var(--shadow-btn);
-        }
-        
-        .btn-close-settings {
-            background: #F8F5F3; color: var(--text-dark);
-            width: 100%; padding: 15px; border-radius: 15px;
-            font-weight: 600; margin-top: 15px;
+            background: #000; border: 1px solid #333; color: white;
+            padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; box-sizing: border-box;
         }
 
-        /* --- SETTINGS SPECIFIC --- */
-        .hl-display { text-align: center; margin: 20px 0; }
-        .hl-display b { font-size: 3rem; color: var(--primary); font-weight: 800; }
-        
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 15px 0; }
-        input[type=range]:focus { outline: none; }
-        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 8px; cursor: pointer; background: #E0D7D0; border-radius: 4px; }
-        input[type=range]::-webkit-slider-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; -webkit-appearance: none; margin-top: -8px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .btn-save { background: var(--primary); color: white; width: 100%; padding: 15px; border-radius: var(--radius); font-weight: 900; }
 
     </style>
 </head>
 <body>
 
-    <div class="hero">
-        <div class="settings-icon" onclick="toggleModal('settings-overlay', true)">⚙️</div>
-        <small>CAFÉINE ACTUELLE</small>
-        <span id="mg-display">0.00</span>
-        <small>Milligrammes</small>
-        <br>
-        <div id="sleep-badge" class="sleep-status status-green">Analyse...</div>
+    <div class="hero" id="hero">
+        <div class="hero-overlay" id="jauge"></div>
+        <div class="hero-content">
+            <div class="settings-btn" onclick="openSettings()">⚙️</div>
+            <small style="letter-spacing: 2px;">CAFFEINE LEVEL</small>
+            <span id="mg-display">0.00</span>
+            <div id="sleep-badge" class="sleep-status">Calcul...</div>
+        </div>
     </div>
 
     <div class="main-container">
-        <div class="chart-card">
-            <span class="card-title">Évolution (Prochaines 12h)</span>
-            <canvas id="caffeineChart"></canvas>
+        <div class="card">
+            <span class="card-title">Forecast</span>
+            <canvas id="chart"></canvas>
         </div>
 
-        <div class="history-card">
-            <span class="card-title">Dernières Consommations</span>
-            <div id="history-list">
-                </div>
+        <div class="card">
+            <span class="card-title">Recent Logs</span>
+            <div id="history-list"></div>
         </div>
     </div>
 
-    <div class="fab-container">
-        <button class="btn-add-main" onclick="toggleModal('add-overlay', true)">
-            <span>+</span> Ajouter un café
-        </button>
-    </div>
+    <button class="fab" onclick="openAdd()">+ ADD COFFEE</button>
 
-    <div class="modal-overlay" id="add-overlay" onclick="toggleModal('add-overlay', false)">
+    <div class="modal-overlay" id="add-modal" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="modal-title">Nouveau Café</span>
-            
-            <div class="option-grid">
-                <button class="opt-btn" id="opt-7" onclick="selectPreset(70, 'Nespresso F7', 'opt-7')">
-                    ☕ Force 7<small>70mg</small>
-                </button>
-                <button class="opt-btn decaf" id="opt-decaf" onclick="selectPreset(3, 'Décaf', 'opt-decaf')">
-                    🔴 Décaf<small>3mg</small>
-                </button>
+            <span class="card-title" style="margin-bottom:20px;">Register Dose</span>
+            <div class="opt-grid">
+                <button class="opt-btn" id="p-7" onclick="setPreset(70, 'F7', 'p-7')">F7<br><small>70mg</small></button>
+                <button class="opt-btn" id="p-d" onclick="setPreset(3, 'Decaf', 'p-d')">DECAF<br><small>3mg</small></button>
             </div>
-
-            <div class="inputs-group">
-                <span class="input-label">OU PERSONNALISÉ & HEURE</span>
-                <div class="inputs-row">
-                    <input type="number" id="custom-mg" placeholder="mg perso">
-                    <input type="time" id="custom-time">
-                </div>
-            </div>
-
-            <button class="btn-save" onclick="submitEntry()">Enregistrer la dose</button>
+            <input type="number" id="c-mg" placeholder="Custom mg">
+            <input type="time" id="c-t">
+            <button class="btn-save" onclick="save()">SAVE</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="settings-overlay" onclick="toggleModal('settings-overlay', false)">
+    <div class="modal-overlay" id="set-modal" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="modal-title">Mon Métabolisme</span>
-            
-            <div class="hl-display">
-                <b id="hl-val">5.0</b><small>h</small>
-                <p style="color:var(--text-light); font-size:0.85rem; margin-top:5px;">Demi-vie de la caféine</p>
+            <span class="card-title">Settings</span>
+            <div style="text-align:center; margin: 20px 0;">
+                <span style="font-size: 2rem; font-weight: 900; color: var(--primary);" id="hl-val">5.0</span>h
+                <input type="range" id="hl-range" min="2" max="10" step="0.5" oninput="changeHl(this.value)" style="width:100%; margin-top:15px;">
             </div>
-            
-            <input type="range" id="hl-range" min="2" max="10" step="0.5" value="5" oninput="changeHl(this.value)">
-            
-            <p style="font-size:0.75rem; color:var(--text-light); text-align:center; line-height:1.4; background:#F8F5F3; padding:10px; border-radius:10px;">
-                Moyenne : 5h. Élimination rapide (ex: fumeur) : ~3h. Sensibilité élevée : 7h+.
-            </p>
-            
-            <button class="btn-close-settings" onclick="toggleModal('settings-overlay', false)">Fermer</button>
-            <button onclick="clearData()" style="width:100%; background:none; color:var(--danger); font-size:0.75rem; margin-top:20px; font-weight:600; text-decoration:underline;">Réinitialiser toutes les données</button>
+            <button class="btn-save" onclick="closeModals()" style="background:#333;">CLOSE</button>
+            <button onclick="clearAll()" style="background:none; border:none; color:red; font-size:0.7rem; width:100%; margin-top:20px; text-decoration:underline;">RESET DATA</button>
         </div>
     </div>
 
 <script>
-    // --- STATE & CONFIG ---
-    let entries = [];
-    let presetMg = 0;
-    let presetLabel = "";
-    let halfLife = 5;
+    let data = JSON.parse(localStorage.getItem('caf_v5') || '[]');
+    let hl = parseFloat(localStorage.getItem('caf_hl_v5') || '5');
+    let preset = { mg: 0, lbl: "" };
     let chart;
-    const STORAGE_KEY = 'caf_pro_v4';
-    const HL_KEY = 'caf_hl_v4';
 
-    // --- DOM ELEMENTS ---
-    const mgDisplay = document.getElementById('mg-display');
-    const sleepBadge = document.getElementById('sleep-badge');
-    const historyList = document.getElementById('history-list');
-    const customTimeInput = document.getElementById('custom-time');
-    const customMgInput = document.getElementById('custom-mg');
-
-    // --- INIT ---
     function init() {
-        // Load Data
-        const savedEntries = localStorage.getItem(STORAGE_KEY);
-        if(savedEntries) entries = JSON.parse(savedEntries);
-        
-        const savedHl = localStorage.getItem(HL_KEY);
-        if(savedHl) {
-            halfLife = parseFloat(savedHl);
-            document.getElementById('hl-range').value = halfLife;
-            document.getElementById('hl-val').innerText = halfLife.toFixed(1);
-        }
-
-        // Setup UI
         initChart();
-        updateUI();
-        setInterval(updateUI, 15000); // Update every 15s (smoother on battery)
+        update();
+        setInterval(update, 15000);
+        document.getElementById('hl-range').value = hl;
+        document.getElementById('hl-val').innerText = hl.toFixed(1);
     }
 
-    // --- MODAL LOGIC (FIXED & CENTERED) ---
-    function toggleModal(modalId, show) {
-        const overlay = document.getElementById(modalId);
-        if(show) {
-            overlay.classList.add('show');
-            // Set current time when opening add modal
-            if(modalId === 'add-overlay') {
-                const now = new Date();
-                customTimeInput.value = now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
-                resetPresets();
-            }
-        } else {
-            overlay.classList.remove('show');
-        }
-    }
-
-    // --- SETTINGS LOGIC ---
-    function changeHl(val) {
-        halfLife = parseFloat(val);
-        document.getElementById('hl-val').innerText = halfLife.toFixed(1);
-        localStorage.setItem(HL_KEY, val);
-        updateUI();
-    }
-
-    // --- ADD ENTRY LOGIC ---
-    function selectPreset(mg, label, btnId) {
-        presetMg = mg; presetLabel = label;
-        customMgInput.value = ""; // Clear custom if preset chosen
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(btnId).classList.add('active');
-    }
-
-    function resetPresets() {
-        presetMg = 0; presetLabel = "";
-        customMgInput.value = "";
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
-    }
-
-    function submitEntry() {
-        const cMg = parseFloat(customMgInput.value);
-        let fMg = cMg || presetMg;
-        let fLabel = cMg ? "Perso" : presetLabel;
-        const tVal = customTimeInput.value;
-
-        if(!fMg || !tVal) { alert("Choisis une dose (bouton ou mg perso) !"); return; }
-
-        const [h, m] = tVal.split(':');
-        const d = new Date(); d.setHours(h, m, 0);
-
-        entries.push({mg: fMg, label: fLabel, d: d});
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-        
-        toggleModal('add-overlay', false);
-        updateUI();
-    }
-
-    // --- MATH & UPDATE LOGIC ---
-    function calculateAtTime(targetDate) {
-        let total = 0;
-        entries.forEach(i => {
-            let diffH = (targetDate - new Date(i.d)) / 3600000;
-            if(diffH < 0) diffH = 0; // Future coffee (not yet drunk)
-            total += i.mg * Math.pow(0.5, diffH / halfLife);
-        });
-        return total;
-    }
-
-    function updateUI() {
+    // --- LOGIQUE ---
+    function update() {
         const now = new Date();
-        const currentMg = calculateAtTime(now);
-        mgDisplay.innerText = currentMg.toFixed(2);
+        const cur = calc(now);
+        document.getElementById('mg-display').innerText = cur.toFixed(2);
 
-        // Sleep Prediction (23h)
-        const tonight = new Date(); tonight.setHours(23, 0, 0);
-        // If past 23h, predict for current level or ignore
-        const pDate = (now > tonight) ? now : tonight; 
-        const predicted = calculateAtTime(pDate);
-        
-        updateSleepBadge(predicted, pDate.getHours());
+        // Jauge dynamique
+        const height = Math.min(cur, 150) / 1.5; // Max jauge à 150mg
+        document.getElementById('jauge').style.height = height + "%";
+
+        // Sommeil
+        const ton = new Date(); ton.setHours(23,0,0);
+        const pred = calc(ton);
+        const b = document.getElementById('sleep-badge');
+        b.className = 'sleep-status ' + (pred < 50 ? 'status-green' : pred < 100 ? 'status-orange' : 'status-red');
+        b.innerText = `At 23h: ${pred.toFixed(0)}mg`;
+
+        // Graph
         updateChart(now);
-        updateHistory();
+
+        // History
+        const list = document.getElementById('history-list');
+        list.innerHTML = "";
+        [...data].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,5).forEach((i, idx) => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `<div><span class="item-label">${i.lbl}</span> <span class="item-time">(${i.mg}mg) à ${new Date(i.d).getHours()}h</span></div><div class="btn-delete" onclick="del(${data.length - 1 - idx})">×</div>`;
+            list.appendChild(div);
+        });
     }
 
-    function updateSleepBadge(mg, hour) {
-        sleepBadge.className = 'sleep-status'; // Reset
-        let text = `À ${hour}h : ${mg.toFixed(0)}mg`;
-        
-        if (mg < 50) { sleepBadge.classList.add('status-green'); text += " (Sommeil OK ✅)"; }
-        else if (mg < 100) { sleepBadge.classList.add('status-orange'); text += " (Risque léger ⚠️)"; }
-        else { sleepBadge.classList.add('status-red'); text += " (Perturbé ❌)"; }
-        
-        sleepBadge.innerText = text;
+    function calc(time) {
+        return data.reduce((acc, i) => {
+            let diff = (time - new Date(i.d)) / 3600000;
+            return acc + (diff < 0 ? 0 : i.mg * Math.pow(0.5, diff / hl));
+        }, 0);
     }
 
-    // --- CHART LOGIC (Chart.js) ---
+    function del(index) {
+        data.splice(index, 1);
+        saveStorage();
+    }
+
+    function save() {
+        const custom = parseFloat(document.getElementById('c-mg').value);
+        const mg = custom || preset.mg;
+        const lbl = custom ? "Perso" : preset.lbl;
+        const t = document.getElementById('c-t').value;
+        if(!mg || !t) return;
+        const [h,m] = t.split(':');
+        const d = new Date(); d.setHours(h,m,0);
+        data.push({mg, lbl, d});
+        saveStorage();
+        closeModals();
+    }
+
+    function saveStorage() {
+        localStorage.setItem('caf_v5', JSON.stringify(data));
+        update();
+    }
+
+    // --- UI ---
+    function openAdd() {
+        document.getElementById('add-modal').style.display = 'flex';
+        document.getElementById('c-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
+        preset = { mg: 0, lbl: "" };
+        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+    }
+    function openSettings() { document.getElementById('set-modal').style.display = 'flex'; }
+    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+    function setPreset(mg, lbl, id) {
+        preset = { mg, lbl };
+        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.getElementById('c-mg').value = "";
+    }
+    function changeHl(v) {
+        hl = parseFloat(v);
+        document.getElementById('hl-val').innerText = hl.toFixed(1);
+        localStorage.setItem('caf_hl_v5', v);
+        update();
+    }
+    function clearAll() { if(confirm("Clear all data?")) { data = []; saveStorage(); location.reload(); } }
+
     function initChart() {
-        const ctx = document.getElementById('caffeineChart').getContext('2d');
-        // Custom font settings for modern look
-        Chart.defaults.font.family = '-apple-system, sans-serif';
-        Chart.defaults.color = '#8E7F76';
-
+        const ctx = document.getElementById('chart').getContext('2d');
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{
-                data: [],
-                borderColor: '#6F4E37', // primary
-                borderWidth: 3,
-                backgroundColor: 'rgba(111, 78, 55, 0.05)',
-                fill: true,
-                tension: 0.4, // smooth
-                pointRadius: 0, // no points for cleaner look
-            }] },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: 2, // Modern wide aspect
-                plugins: { legend: { display: false }, tooltip: { enabled: false } },
-                scales: {
-                    y: { min: 0, suggestedMax: 100, ticks: { stepSize: 50 }, grid: { color: '#F2EEEC' } },
-                    x: { grid: { display: false }, ticks: { maxRotation: 0 } }
-                }
-            }
+            data: { labels: [], datasets: [{ data: [], borderColor: '#D2691E', tension: 0.4, fill: true, backgroundColor: 'rgba(210, 105, 30, 0.05)', pointRadius: 0 }] },
+            options: { plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#555', font: { size: 10 } }, grid: { display: false } } } }
         });
     }
 
     function updateChart(now) {
-        const labels = []; const data = [];
-        // Predict next 12h, every 2h
+        const labels = []; const points = [];
         for(let i=0; i<=12; i+=2) {
-            const fTime = new Date(now.getTime() + i*3600000);
-            labels.push(fTime.getHours() + 'h');
-            data.push(calculateAtTime(fTime).toFixed(1));
+            const t = new Date(now.getTime() + i*3600000);
+            labels.push(t.getHours() + 'h');
+            points.push(calc(t).toFixed(1));
         }
         chart.data.labels = labels;
-        chart.data.datasets[0].data = data;
-        chart.update('none'); // Update without animation for smoother refresh
+        chart.data.datasets[0].data = points;
+        chart.update('none');
     }
 
-    // --- HISTORY LOGIC ---
-    function updateHistory() {
-        historyList.innerHTML = "";
-        // Sort newest first, show only last 4
-        const sorted = [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0, 4);
-        
-        if(sorted.length === 0) { historyList.innerHTML = "<p style='color:var(--text-light); text-align:center; font-size:0.9rem;'>Aucun café enregistré.</p>"; return; }
-
-        sorted.forEach(i => {
-            const d = new Date(i.d);
-            const timeFmt = `${d.getHours()}h${d.getMinutes().toString().padStart(2,'0')}`;
-            const div = document.createElement('div');
-            div.className = 'history-item';
-            div.innerHTML = `
-                <div class="history-item-info"><strong>${i.label}</strong><br><small>${timeFmt}</small></div>
-                <div class="history-item-mg">${i.mg} mg</div>
-            `;
-            historyList.appendChild(div);
-        });
-    }
-
-    function clearData() { if(confirm("Voulez-vous vraiment effacer tout votre historique de caféine ?")) { localStorage.removeItem(STORAGE_KEY); localStorage.removeItem(HL_KEY); location.reload(); } }
-
-    // Start everything
     init();
-
 </script>
 </body>
 </html>

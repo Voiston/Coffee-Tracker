@@ -3,228 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Caffeine Protocol v8</title>
+    <title>CAFFEINE PROTOCOL V9</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
     <style>
-        /* Import des polices : Playfair pour l'élégance, Inter pour la technique */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@1,900&family=Saira+Condensed:wght@700;900&display=swap');
 
         :root {
-            --bg: #0F0F0F; /* Anthracite très sombre */
-            --surface: #161616;
-            --accent: #CD7F32; /* Bronze brossé */
-            --accent-dim: #4A3A2C;
-            --text: #EAEAEA;
-            --text-dim: #666666;
-            --radius: 4px; /* Très faible pour un look taillé */
+            --bg: #0A0A0A;
+            --surface: #121212;
+            --accent: #B8860B; /* Bronze métallique */
+            --text: #F2F2F2;
+            --text-dim: #444444;
+            --radius: 2px;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Saira Condensed', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
-            letter-spacing: -0.02em;
+            letter-spacing: 0.05em;
         }
 
         /* --- DASHBOARD HEADER --- */
         .hero {
             width: 100%;
-            padding: 80px 20px 60px;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0F0F0F 100%);
-            border-bottom: 1px solid #222;
+            padding: 70px 20px 50px;
+            background: linear-gradient(180deg, #111 0%, #0A0A0A 100%);
+            border-bottom: 1px solid #1A1A1A;
             text-align: center;
             position: relative;
         }
 
         .settings-btn {
-            position: absolute; top: 50px; right: 25px;
-            color: var(--text-dim); font-size: 1rem; cursor: pointer;
-            text-transform: uppercase; font-weight: 800; letter-spacing: 1px;
+            position: absolute; top: 40px; right: 20px;
+            color: var(--text-dim); font-size: 0.8rem; cursor: pointer;
+            font-weight: 900; border: 1px solid #222; padding: 4px 8px;
         }
 
-        .label-refined {
+        .label-tech {
             font-size: 0.7rem;
-            letter-spacing: 2px;
-            color: var(--text-dim);
+            color: var(--accent);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 900;
         }
 
-        /* --- NOUVEL EFFET PULSE (VISIBLE) --- */
+        /* --- PULSE EFFECT (VISIBLE & MASCULIN) --- */
         #mg-display {
-            font-family: 'Playfair Display', serif;
+            font-family: 'Inter', sans-serif; /* Inter Black Italic */
             font-size: 6rem;
             font-weight: 900;
             font-style: italic;
             display: block;
-            margin: 10px 0;
+            margin: 5px 0;
             color: var(--text);
-            line-height: 1;
-            /* La lueur Bronze qui respire */
-            text-shadow: 0 0 15px rgba(205, 127, 50, 0); 
-            transition: text-shadow 0.5s ease;
+            line-height: 0.9;
+            position: relative;
         }
 
-        @keyframes pulse-glow-bronze {
-            0% { text-shadow: 0 0 10px rgba(205, 127, 50, 0.1); }
-            50% { text-shadow: 0 0 35px rgba(205, 127, 50, 0.7); }
-            100% { text-shadow: 0 0 10px rgba(205, 127, 50, 0.1); }
+        @keyframes pulse-shadow {
+            0% { filter: drop-shadow(0 0 5px rgba(184, 134, 11, 0.2)); }
+            50% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.6)); }
+            100% { filter: drop-shadow(0 0 5px rgba(184, 134, 11, 0.2)); }
         }
 
         .active-pulse {
-            animation: pulse-glow-bronze var(--pulse-speed, 3s) infinite ease-in-out;
+            animation: pulse-shadow var(--pulse-speed, 2s) infinite ease-in-out;
         }
 
-        .sleep-badge {
+        .status-bar {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid #222;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            gap: 12px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            font-weight: 900;
             color: var(--text-dim);
+            text-transform: uppercase;
         }
 
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-
-        /* --- LAYOUT & CARDS --- */
-        .container { width: 90%; max-width: 400px; margin-top: 30px; padding-bottom: 140px; }
+        /* --- CONTAINER --- */
+        .container { width: 92%; max-width: 420px; margin-top: 20px; padding-bottom: 140px; }
 
         .card {
             background: var(--surface);
-            border: 1px solid #222;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: var(--radius);
+            border-left: 3px solid #1A1A1A;
+            padding: 20px;
+            margin-bottom: 15px;
         }
 
         .card-header {
             font-size: 0.65rem;
             color: var(--text-dim);
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 800;
+            margin-bottom: 15px;
             display: flex; justify-content: space-between;
         }
 
-        /* --- ACTION BUTTON (AFFINÉ) --- */
+        /* --- ACTION BUTTON --- */
         .btn-main {
             position: fixed; bottom: 30px;
-            width: 85%; max-width: 360px;
-            background: none;
-            color: var(--accent);
-            border: 2px solid var(--accent);
+            width: 88%; max-width: 380px;
+            background: var(--text);
+            color: #000;
+            border: none;
             padding: 20px;
-            font-size: 0.9rem;
-            font-weight: 800;
+            font-size: 1rem;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
             z-index: 100;
             border-radius: var(--radius);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
-        .btn-main:active { background: var(--accent-dim); color: var(--text); }
 
         /* --- LOGS --- */
         .log-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid #222;
+            padding: 12px 0; border-bottom: 1px dotted #222;
         }
-        .log-info strong { font-size: 0.95rem; color: var(--text); font-weight: 700; }
-        .log-info div { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; font-weight: 600; }
-        .delete-btn { color: #444; font-size: 0.8rem; padding: 10px; font-weight: 800; }
+        .log-info strong { font-size: 1rem; color: var(--text); }
+        .log-info div { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
+        .del-btn { color: #333; font-weight: 900; padding: 10px; }
 
         /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.92); display: none;
+            background: rgba(0,0,0,0.96); display: none;
             justify-content: center; align-items: center; z-index: 200;
-            backdrop-filter: blur(5px);
         }
         .modal {
-            background: #111; width: 85%; max-width: 340px;
-            padding: 35px; border: 1px solid #333;
-            border-radius: var(--radius);
+            background: #000; width: 85%; padding: 30px;
+            border: 1px solid #222; border-radius: var(--radius);
         }
-        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .grid-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .btn-opt {
-            background: #1a1a1a; border: 1px solid #333; color: #fff;
-            padding: 18px; font-weight: 700; font-size: 0.8rem; border-radius: 4px;
+            background: #111; border: 1px solid #222; color: #fff;
+            padding: 15px; font-weight: 900; font-family: 'Saira Condensed';
         }
-        .btn-opt.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+        .btn-opt.active { background: var(--accent); color: #000; }
         
         input {
-            background: #000; border: 1px solid #333; color: #fff;
-            padding: 16px; width: 100%; margin-bottom: 15px; box-sizing: border-box;
-            font-size: 0.95rem; border-radius: 4px;
+            background: #000; border: 1px solid #222; color: #fff;
+            padding: 15px; width: 100%; margin-bottom: 10px; box-sizing: border-box;
+            font-family: 'Saira Condensed'; font-size: 1.1rem;
         }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <div class="settings-btn" onclick="openModal('modal-settings')">Setup</div>
-        <span class="label-refined">System.Status // Active</span>
+        <div class="settings-btn" onclick="openModal('modal-settings')">CONFIG_01</div>
+        <span class="label-tech">METABOLIC_INDEX</span>
         <span id="mg-display" class="active-pulse">0.00</span>
-        <div class="sleep-badge" id="sleep-badge">
-            <div class="status-dot"></div>
-            <span>ANALYZING...</span>
+        <div class="status-bar" id="sleep-badge">
+            <span id="sleep-txt">ANALYZING_SYSTEM</span>
         </div>
     </div>
 
     <div class="container">
         <div class="card">
-            <div class="card-header"><span>Decay_Projection</span><span>v8.0</span></div>
+            <div class="card-header"><span>ESTIMATED_DECAY</span><span>V9_TECH</span></div>
             <canvas id="mainChart"></canvas>
         </div>
 
         <div class="card">
-            <div class="card-header"><span>Session_Logs</span><span id="entry-count">0 UNITS</span></div>
+            <div class="card-header"><span>RECENT_UNITS</span><span id="entry-count">0</span></div>
             <div id="history-list"></div>
         </div>
     </div>
 
-    <button class="btn-main" onclick="openModal('modal-add')">Register Intake +</button>
+    <button class="btn-main" onclick="openModal('modal-add')">ADD_DATA_POINT +</button>
 
     <div class="modal-overlay" id="modal-add" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-refined" style="display:block; margin-bottom:25px;">Select_Dose</span>
-            <div class="grid-options">
-                <button class="btn-opt" id="p-7" onclick="setPreset(70, 'Force 7', 'p-7')">F7_70mg</button>
-                <button class="btn-opt" id="p-d" onclick="setPreset(3, 'Decaf', 'p-d')">Dcf_3mg</button>
+            <span class="label-tech" style="display:block; margin-bottom:20px;">INPUT_DOSE</span>
+            <div class="grid-opts">
+                <button class="btn-opt" id="p-7" onclick="setPreset(70, 'FORCE_7', 'p-7')">F7 (70MG)</button>
+                <button class="btn-opt" id="p-d" onclick="setPreset(3, 'DECAF', 'p-d')">DCF (3MG)</button>
             </div>
-            <input type="number" id="in-mg" placeholder="Custom MG">
+            <input type="number" id="in-mg" placeholder="MG_CUSTOM">
             <input type="time" id="in-t">
-            <button class="btn-main" style="position:static; width:100%; margin-top:25px; background:var(--accent); color:#000;" onclick="saveEntry()">Execute Protocol</button>
+            <button class="btn-main" style="position:static; width:100%; margin-top:20px; background:var(--accent);" onclick="saveEntry()">CONFIRM</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal-settings" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-refined" style="display:block; margin-bottom:25px;">Metabolic_Config</span>
+            <span class="label-tech" style="display:block; margin-bottom:20px;">HALF_LIFE_ADJUST</span>
             <div style="text-align:center;">
-                <span style="font-family:'Playfair Display', serif; font-size:4rem; color:var(--accent); font-style:italic;" id="hl-val">5.0</span>
-                <span class="label-refined" style="display:block; margin-top:-10px;">Hours HL</span>
-                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin:35px 0;" oninput="updateHl(this.value)">
+                <span style="font-family:'Inter'; font-size:4rem; font-weight:900; font-style:italic;" id="hl-val">5.0</span>
+                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin:30px 0;" oninput="updateHl(this.value)">
             </div>
-            <button class="btn-opt" style="width:100%;" onclick="closeModals()">Close</button>
-            <button onclick="clearAll()" style="color:#444; background:none; border:none; width:100%; margin-top:25px; font-size:0.6rem; font-weight:800; text-decoration:underline;">RESET_DATABASE</button>
+            <button class="btn-opt" style="width:100%;" onclick="closeModals()">BACK</button>
+            <button onclick="clearAll()" style="color:#222; background:none; border:none; width:100%; margin-top:20px; font-size:0.6rem; font-weight:900;">ERASE_ALL_DATA</button>
         </div>
     </div>
 
 <script>
-    let entries = JSON.parse(localStorage.getItem('caf_v8') || '[]');
-    let hl = parseFloat(localStorage.getItem('caf_hl_v8') || '5');
+    let entries = JSON.parse(localStorage.getItem('caf_v9') || '[]');
+    let hl = parseFloat(localStorage.getItem('caf_hl_v9') || '5');
     let preset = { mg: 0, lbl: "" };
     let chart;
 
@@ -249,22 +230,18 @@
         const display = document.getElementById('mg-display');
         display.innerText = cur.toFixed(2);
 
-        // --- UPDATE PULSE SPEED (DYNAMIQUE) ---
-        // Vitesse de pulsation de 4s (clean) à 0.8s (boosté à 150mg+)
-        let speed = 4 - (Math.min(cur, 150) / 150) * 3.2;
-        if (speed < 0.8) speed = 0.8;
-        display.style.setProperty('--pulse-speed', speed + 's');
+        // --- PULSE DYNAMIQUE ---
+        let speed = 3 - (Math.min(cur, 150) / 150) * 2.5;
+        display.style.setProperty('--pulse-speed', Math.max(speed, 0.5) + 's');
         
         // --- SLEEP STATUS ---
         const ton = new Date(); ton.setHours(23,0,0);
         const pred = calc(ton);
-        const b = document.getElementById('sleep-badge');
-        const dot = b.querySelector('.status-dot');
-        const txt = b.querySelector('span');
+        const txt = document.getElementById('sleep-txt');
         
-        if(pred < 50) { dot.style.color = '#4CAF50'; txt.innerText = `READY_23H: ${pred.toFixed(0)}MG`; }
-        else if(pred < 100) { dot.style.color = '#FF9800'; txt.innerText = `WARN_23H: ${pred.toFixed(0)}MG`; }
-        else { dot.style.color = '#EF5350'; txt.innerText = `CRIT_23H: ${pred.toFixed(0)}MG`; }
+        if(pred < 50) { txt.style.color = '#CCFF00'; txt.innerText = `SLEEP_OPTIMAL // ${pred.toFixed(0)}MG`; }
+        else if(pred < 100) { txt.style.color = '#FFAA00'; txt.innerText = `SLEEP_RISK // ${pred.toFixed(0)}MG`; }
+        else { txt.style.color = '#FF003C'; txt.innerText = `SLEEP_CRITICAL // ${pred.toFixed(0)}MG`; }
 
         updateChart(now);
         renderHistory();
@@ -273,11 +250,11 @@
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = "";
-        document.getElementById('entry-count').innerText = `${entries.length} UNITS`;
+        document.getElementById('entry-count').innerText = entries.length;
         [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,4).forEach((i, idx) => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            div.innerHTML = `<div class="log-info"><strong>${i.lbl} / ${i.mg}mg</strong><div>${new Date(i.d).getHours()}H${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="delete-btn" onclick="removeEntry(${entries.length - 1 - idx})">DEL</div>`;
+            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}MG @ ${new Date(i.d).getHours()}H${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="del-btn" onclick="removeEntry(${entries.length - 1 - idx})">DEL</div>`;
             list.appendChild(div);
         });
     }
@@ -285,7 +262,7 @@
     function saveEntry() {
         const custom = parseFloat(document.getElementById('in-mg').value);
         const mg = custom || preset.mg;
-        const lbl = custom ? "Custom" : preset.lbl;
+        const lbl = custom ? "CUSTOM" : preset.lbl;
         const t = document.getElementById('in-t').value;
         if(!mg || !t) return;
         const [h,m] = t.split(':');
@@ -296,7 +273,7 @@
     }
 
     function removeEntry(idx) { entries.splice(idx, 1); saveStorage(); }
-    function saveStorage() { localStorage.setItem('caf_v8', JSON.stringify(entries)); update(); }
+    function saveStorage() { localStorage.setItem('caf_v9', JSON.stringify(entries)); update(); }
     function openModal(id) { 
         document.getElementById(id).style.display = 'flex'; 
         if(id === 'modal-add') document.getElementById('in-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
@@ -307,18 +284,15 @@
         document.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
-    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v8', v); update(); }
-    function clearAll() { if(confirm("FORMAT ALL DATA?")) { entries = []; saveStorage(); location.reload(); } }
+    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v9', v); update(); }
+    function clearAll() { if(confirm("FORMAT ALL?")) { entries = []; saveStorage(); location.reload(); } }
 
     function initChart() {
         const ctx = document.getElementById('mainChart').getContext('2d');
-        Chart.defaults.color = '#444';
-        Chart.defaults.font.family = 'Inter';
-
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{ data: [], borderColor: '#CD7F32', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(205, 127, 50, 0.01)', pointRadius: 0 }] },
-            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { font: { size: 9 } }, grid: { color: '#1a1a1a' } } } }
+            data: { labels: [], datasets: [{ data: [], borderColor: '#B8860B', borderWidth: 2, tension: 0.1, fill: false, pointRadius: 0 }] },
+            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#333', font: { family: 'Saira Condensed', size: 10 } }, grid: { color: '#111' } } } }
         });
     }
 

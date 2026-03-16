@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caffeine Tracker Pro</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -29,37 +30,46 @@
 
         .hero {
             width: 100%;
-            padding: 50px 20px 30px;
+            padding: 40px 20px 20px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white; text-align: center;
             border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
+            position: relative;
         }
 
-        #mg-display { font-size: 4.5rem; font-weight: 800; display: block; }
+        #mg-display { font-size: 3.5rem; font-weight: 800; display: block; }
+
+        .settings-icon {
+            position: absolute; top: 40px; right: 20px;
+            font-size: 1.5rem; color: white; opacity: 0.8;
+        }
+
+        /* Graphique */
+        .chart-container {
+            width: 90%; max-width: 400px;
+            background: white; border-radius: 20px;
+            margin-top: -15px; padding: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
 
         /* Badge Sommeil */
         .sleep-status {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin-top: 15px;
-            display: inline-block;
-            font-weight: 600;
-            font-size: 0.9rem;
+            padding: 8px 15px; border-radius: 20px;
+            margin-top: 10px; display: inline-block;
+            font-weight: 600; font-size: 0.8rem;
         }
+        .status-green { background-color: var(--success); color: white; }
+        .status-orange { background-color: var(--warning); color: white; }
+        .status-red { background-color: var(--danger); color: white; }
 
-        .status-green { background-color: var(--success) !important; color: white; }
-        .status-orange { background-color: var(--warning) !important; color: white; }
-        .status-red { background-color: var(--danger) !important; color: white; }
-
-        .fab-container { margin-top: -25px; z-index: 10; }
         .btn-add-main {
             background: var(--text); color: white; border: none;
             padding: 15px 30px; border-radius: 50px; font-weight: 700;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin: 20px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        /* Modal & UI Elements */
+        /* Modals */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5); display: none; align-items: flex-end; z-index: 100;
@@ -71,28 +81,29 @@
             transform: translateY(100%); transition: transform 0.3s ease-out;
         }
         .modal.active { transform: translateY(0); }
+        
         .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        .opt-btn { background: #F5F5F5; padding: 20px; border-radius: 20px; font-weight: 700; text-align: center; }
+        .opt-btn { background: #F5F5F5; padding: 15px; border-radius: 15px; font-weight: 700; text-align: center; }
         .opt-btn.active { border: 2px solid var(--primary); background: #FDF7F2; }
         
-        .history-container { width: 100%; max-width: 400px; margin-top: 30px; padding: 0 20px 100px; box-sizing: border-box; }
-        .history-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .history-container { width: 100%; max-width: 400px; padding: 0 20px 100px; box-sizing: border-box; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <small>Taux actuel</small>
+        <div class="settings-icon" onclick="openSettings()">⚙️</div>
+        <small>CAFÉINE ACTUELLE</small>
         <span id="mg-display">0.00</span>
-        
-        <div id="sleep-badge" class="sleep-status">
-            Analyse du sommeil...
-        </div>
+        <div id="sleep-badge" class="sleep-status">Calcul...</div>
     </div>
 
-    <div class="fab-container">
-        <button class="btn-add-main" onclick="openModal()">+ Ajouter un café</button>
+    <div class="chart-container">
+        <canvas id="caffeineChart"></canvas>
     </div>
+
+    <button class="btn-add-main" onclick="openModal()">+ Ajouter un café</button>
 
     <div class="history-container" id="history-list"></div>
 
@@ -111,21 +122,63 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="settings-overlay" onclick="closeSettings()">
+        <div class="modal" id="settings-modal" onclick="event.stopPropagation()">
+            <span style="font-weight:800; display:block; margin-bottom:20px;">Réglages Métabolisme</span>
+            <label style="font-size:0.9rem;">Demi-vie (heures) : <b id="hl-val">5</b>h</label>
+            <input type="range" id="hl-range" min="2" max="10" step="0.5" value="5" style="width:100%; margin:20px 0;" oninput="updateHl(this.value)">
+            <p style="font-size:0.7rem; color:#888;">Note: 5h est la moyenne. 3h pour les fumeurs. 7h+ pour une sensibilité élevée.</p>
+            <button onclick="closeSettings()" style="width:100%; background:var(--text); color:white; padding:15px; border-radius:15px; border:none; margin-top:10px;">Fermer</button>
+            <button onclick="clearAll()" style="width:100%; background:none; color:red; border:none; margin-top:20px; font-size:0.7rem;">Réinitialiser les données</button>
+        </div>
+    </div>
+
 <script>
     let entries = [];
     let selectedMg = 0;
     let selectedLabel = "";
-    const HL = 5; // Demi-vie moyenne
+    let halfLife = 5;
+    let chart;
 
+    // --- INITIALISATION ---
+    function init() {
+        const saved = localStorage.getItem('caf_pro_v3');
+        if(saved) entries = JSON.parse(saved);
+        const savedHl = localStorage.getItem('caf_hl');
+        if(savedHl) {
+            halfLife = parseFloat(savedHl);
+            document.getElementById('hl-range').value = halfLife;
+            document.getElementById('hl-val').innerText = halfLife;
+        }
+        initChart();
+        update();
+        setInterval(update, 30000); // Mise à jour auto toutes les 30s
+    }
+
+    // --- MODALS ---
     function openModal() {
         document.getElementById('overlay').style.display = 'flex';
         setTimeout(() => document.getElementById('modal').classList.add('active'), 10);
         document.getElementById('custom-time').value = new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
     }
-
     function closeModal() {
         document.getElementById('modal').classList.remove('active');
         setTimeout(() => document.getElementById('overlay').style.display = 'none', 300);
+    }
+    function openSettings() {
+        document.getElementById('settings-overlay').style.display = 'flex';
+        setTimeout(() => document.getElementById('settings-modal').classList.add('active'), 10);
+    }
+    function closeSettings() {
+        document.getElementById('settings-modal').classList.remove('active');
+        setTimeout(() => document.getElementById('settings-overlay').style.display = 'none', 300);
+    }
+
+    function updateHl(val) {
+        halfLife = parseFloat(val);
+        document.getElementById('hl-val').innerText = val;
+        localStorage.setItem('caf_hl', val);
+        update();
     }
 
     function selectType(mg, label, id) {
@@ -140,11 +193,10 @@
         let finalLabel = customMg ? "Perso" : selectedLabel;
         const timeVal = document.getElementById('custom-time').value;
         if(!finalMg || !timeVal) return;
-
         const [h, m] = timeVal.split(':');
         const d = new Date(); d.setHours(h, m, 0);
         entries.push({mg: finalMg, label: finalLabel, d: d});
-        localStorage.setItem('caf_pro_v2', JSON.stringify(entries));
+        localStorage.setItem('caf_pro_v3', JSON.stringify(entries));
         closeModal(); update();
     }
 
@@ -153,53 +205,69 @@
         entries.forEach(i => {
             let diff = (targetDate - new Date(i.d)) / 3600000;
             if(diff < 0) diff = 0;
-            total += i.mg * Math.pow(0.5, diff / HL);
+            total += i.mg * Math.pow(0.5, diff / halfLife);
         });
         return total;
+    }
+
+    function initChart() {
+        const ctx = document.getElementById('caffeineChart').getContext('2d');
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: { labels: [], datasets: [{
+                label: 'mg',
+                data: [],
+                borderColor: '#6F4E37',
+                backgroundColor: 'rgba(111, 78, 55, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0
+            }] },
+            options: {
+                responsive: true,
+                scales: { y: { min: 0, suggestedMax: 150 }, x: { grid: { display: false } } },
+                plugins: { legend: { display: false } }
+            }
+        });
     }
 
     function update() {
         const now = new Date();
         const currentMg = calculateAtTime(now);
-        
-        // Prédiction à 23h
-        const tonight = new Date();
-        tonight.setHours(23, 0, 0);
-        // Si il est déjà après 23h, on prédit pour demain 23h ou on reste sur aujourd'hui
-        const predictedMg = calculateAtTime(tonight);
-
         document.getElementById('mg-display').innerText = currentMg.toFixed(2);
 
-        // Mise à jour du Badge Sommeil
+        // Badge Sommeil
+        const tonight = new Date(); tonight.setHours(23, 0, 0);
+        const predicted = calculateAtTime(tonight);
         const badge = document.getElementById('sleep-badge');
-        badge.classList.remove('status-green', 'status-orange', 'status-red');
+        badge.className = 'sleep-status ' + (predicted < 50 ? 'status-green' : predicted < 100 ? 'status-orange' : 'status-red');
+        badge.innerText = `À 23h : ${predicted.toFixed(0)}mg`;
 
-        if (predictedMg < 50) {
-            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Sommeil OK ✅)`;
-            badge.classList.add('status-green');
-        } else if (predictedMg < 100) {
-            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Risque moyen ⚠️)`;
-            badge.classList.add('status-orange');
-        } else {
-            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Sommeil perturbé ❌)`;
-            badge.classList.add('status-red');
+        // Mise à jour Graphique (Prochaines 12h)
+        const labels = []; const data = [];
+        for(let i=0; i<=12; i+=2) {
+            const future = new Date(now.getTime() + i*3600000);
+            labels.push(future.getHours() + 'h');
+            data.push(calculateAtTime(future).toFixed(1));
         }
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = data;
+        chart.update();
 
-        // Liste historique
+        // Historique
         const list = document.getElementById('history-list');
         list.innerHTML = "";
-        entries.sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(i => {
+        entries.sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0, 5).forEach(i => {
             const div = document.createElement('div');
             div.className = 'history-item';
-            div.innerHTML = `<span><strong>${i.label}</strong></span><span>${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</span>`;
+            div.innerHTML = `<span>${i.label}</span><span>${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</span>`;
             list.appendChild(div);
         });
     }
 
-    const saved = localStorage.getItem('caf_pro_v2');
-    if(saved) entries = JSON.parse(saved);
-    update();
-    setInterval(update, 10000);
+    function clearAll() { if(confirm("Réinitialiser ?")) { entries = []; localStorage.clear(); location.reload(); } }
+
+    init();
 </script>
 </body>
 </html>

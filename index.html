@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAFFEINE X-TRACKER ELITE</title>
+    <title>Caffeine Protocol v8</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700;900&display=swap');
+        /* Import des polices : Playfair pour l'élégance, Inter pour la technique */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,900&family=Inter:wght@400;600;800&display=swap');
 
         :root {
-            --bg: #000000;
-            --surface: #0A0A0A;
-            --accent: #CCFF00;
-            --danger: #FF003C;
-            --text: #FFFFFF;
-            --text-dim: #444444;
-            --radius: 8px;
+            --bg: #0F0F0F; /* Anthracite très sombre */
+            --surface: #161616;
+            --accent: #CD7F32; /* Bronze brossé */
+            --accent-dim: #4A3A2C;
+            --text: #EAEAEA;
+            --text-dim: #666666;
+            --radius: 4px; /* Très faible pour un look taillé */
         }
 
         body {
@@ -28,146 +29,154 @@
             color: var(--text);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
+            letter-spacing: -0.02em;
         }
 
         /* --- DASHBOARD HEADER --- */
         .hero {
             width: 100%;
-            padding: 70px 20px 50px;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            border-bottom: 2px solid #222;
+            padding: 80px 20px 60px;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0F0F0F 100%);
+            border-bottom: 1px solid #222;
             text-align: center;
             position: relative;
         }
 
         .settings-btn {
-            position: absolute; top: 40px; right: 25px;
-            color: var(--text-dim); font-size: 1.2rem;
+            position: absolute; top: 50px; right: 25px;
+            color: var(--text-dim); font-size: 1rem; cursor: pointer;
+            text-transform: uppercase; font-weight: 800; letter-spacing: 1px;
         }
 
-        .label-tech {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem;
-            letter-spacing: 4px;
-            color: var(--accent);
-            opacity: 0.8;
+        .label-refined {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 600;
         }
 
-        /* --- EFFET PULSE RÉACTIF --- */
+        /* --- NOUVEL EFFET PULSE (VISIBLE) --- */
         #mg-display {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 5.5rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
             font-weight: 900;
             font-style: italic;
             display: block;
-            margin: 15px 0;
+            margin: 10px 0;
             color: var(--text);
-            transition: text-shadow 0.3s ease;
+            line-height: 1;
+            /* La lueur Bronze qui respire */
+            text-shadow: 0 0 15px rgba(205, 127, 50, 0); 
+            transition: text-shadow 0.5s ease;
         }
 
-        @keyframes pulse-glow {
-            0% { text-shadow: 0 0 10px rgba(204, 255, 0, 0.2); transform: scale(1); }
-            50% { text-shadow: 0 0 40px rgba(204, 255, 0, 0.6); transform: scale(1.02); }
-            100% { text-shadow: 0 0 10px rgba(204, 255, 0, 0.2); transform: scale(1); }
+        @keyframes pulse-glow-bronze {
+            0% { text-shadow: 0 0 10px rgba(205, 127, 50, 0.1); }
+            50% { text-shadow: 0 0 35px rgba(205, 127, 50, 0.7); }
+            100% { text-shadow: 0 0 10px rgba(205, 127, 50, 0.1); }
         }
 
         .active-pulse {
-            animation: pulse-glow var(--pulse-speed, 2s) infinite ease-in-out;
+            animation: pulse-glow-bronze var(--pulse-speed, 3s) infinite ease-in-out;
         }
 
-        .sleep-indicator {
+        .sleep-badge {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 20px;
-            background: #000;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.03);
             border: 1px solid #222;
-            border-radius: 4px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
         }
 
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-        /* --- LAYOUT --- */
-        .container { width: 92%; max-width: 420px; margin-top: 25px; padding-bottom: 140px; }
+        /* --- LAYOUT & CARDS --- */
+        .container { width: 90%; max-width: 400px; margin-top: 30px; padding-bottom: 140px; }
 
         .card {
             background: var(--surface);
-            border: 1px solid #151515;
-            padding: 20px;
+            border: 1px solid #222;
+            padding: 25px;
             margin-bottom: 20px;
-            position: relative;
-        }
-
-        .card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 2px; height: 10px; background: var(--accent);
+            border-radius: var(--radius);
         }
 
         .card-header {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: var(--text-dim);
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 800;
             display: flex; justify-content: space-between;
         }
 
-        /* --- ACTION BUTTON --- */
+        /* --- ACTION BUTTON (AFFINÉ) --- */
         .btn-main {
             position: fixed; bottom: 30px;
-            width: 85%; max-width: 380px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 22px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-            font-size: 1rem;
+            width: 85%; max-width: 360px;
+            background: none;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+            padding: 20px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            text-transform: uppercase;
             letter-spacing: 2px;
             z-index: 100;
-            clip-path: polygon(0 0, 95% 0, 100% 30%, 100% 100%, 5% 100%, 0 70%);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+        .btn-main:active { background: var(--accent-dim); color: var(--text); }
 
         /* --- LOGS --- */
         .log-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid #111;
+            padding: 15px 0; border-bottom: 1px solid #222;
         }
-        .log-info strong { font-family: 'Orbitron'; font-size: 0.9rem; color: var(--accent); }
-        .log-info div { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
-        .delete-btn { color: var(--danger); font-family: 'Orbitron'; font-size: 0.8rem; padding: 10px; }
+        .log-info strong { font-size: 0.95rem; color: var(--text); font-weight: 700; }
+        .log-info div { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; font-weight: 600; }
+        .delete-btn { color: #444; font-size: 0.8rem; padding: 10px; font-weight: 800; }
 
         /* --- MODALS --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.98); display: none;
+            background: rgba(0,0,0,0.92); display: none;
             justify-content: center; align-items: center; z-index: 200;
+            backdrop-filter: blur(5px);
         }
         .modal {
-            background: #050505; width: 85%; padding: 40px 25px;
-            border: 1px solid #222; position: relative;
+            background: #111; width: 85%; max-width: 340px;
+            padding: 35px; border: 1px solid #333;
+            border-radius: var(--radius);
         }
-        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px; }
+        .grid-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .btn-opt {
-            background: #111; border: 1px solid #333; color: #fff;
-            padding: 20px; font-family: 'Orbitron'; font-size: 0.8rem;
+            background: #1a1a1a; border: 1px solid #333; color: #fff;
+            padding: 18px; font-weight: 700; font-size: 0.8rem; border-radius: 4px;
         }
-        .btn-opt.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .btn-opt.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
         
         input {
-            background: #000; border: 1px solid #222; color: #fff;
-            padding: 18px; width: 100%; margin-bottom: 15px; box-sizing: border-box;
-            font-family: 'Orbitron'; font-size: 1rem;
+            background: #000; border: 1px solid #333; color: #fff;
+            padding: 16px; width: 100%; margin-bottom: 15px; box-sizing: border-box;
+            font-size: 0.95rem; border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <div class="settings-btn" onclick="openModal('modal-settings')">MOD_CFG</div>
-        <span class="label-tech">METABOLIC_SENSORS // LIVE</span>
+        <div class="settings-btn" onclick="openModal('modal-settings')">Setup</div>
+        <span class="label-refined">System.Status // Active</span>
         <span id="mg-display" class="active-pulse">0.00</span>
-        <div class="sleep-indicator" id="sleep-badge">
+        <div class="sleep-badge" id="sleep-badge">
             <div class="status-dot"></div>
             <span>ANALYZING...</span>
         </div>
@@ -175,47 +184,47 @@
 
     <div class="container">
         <div class="card">
-            <div class="card-header"><span>DECAY_PROJECTION</span><span>v7.0_ELITE</span></div>
+            <div class="card-header"><span>Decay_Projection</span><span>v8.0</span></div>
             <canvas id="mainChart"></canvas>
         </div>
 
         <div class="card">
-            <div class="card-header"><span>INTAKE_HISTORY</span><span id="entry-count">0_UNITS</span></div>
+            <div class="card-header"><span>Session_Logs</span><span id="entry-count">0 UNITS</span></div>
             <div id="history-list"></div>
         </div>
     </div>
 
-    <button class="btn-main" onclick="openModal('modal-add')">INITIATE_INTAKE</button>
+    <button class="btn-main" onclick="openModal('modal-add')">Register Intake +</button>
 
     <div class="modal-overlay" id="modal-add" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-tech" style="display:block; margin-bottom:30px;">SELECT_DOSE_TYPE</span>
+            <span class="label-refined" style="display:block; margin-bottom:25px;">Select_Dose</span>
             <div class="grid-options">
-                <button class="btn-opt" id="p-7" onclick="setPreset(70, 'FORCE_7', 'p-7')">F7_70MG</button>
-                <button class="btn-opt" id="p-d" onclick="setPreset(3, 'DECAF', 'p-d')">DCF_3MG</button>
+                <button class="btn-opt" id="p-7" onclick="setPreset(70, 'Force 7', 'p-7')">F7_70mg</button>
+                <button class="btn-opt" id="p-d" onclick="setPreset(3, 'Decaf', 'p-d')">Dcf_3mg</button>
             </div>
-            <input type="number" id="in-mg" placeholder="CUSTOM_MG">
+            <input type="number" id="in-mg" placeholder="Custom MG">
             <input type="time" id="in-t">
-            <button class="btn-main" style="position:static; width:100%; margin-top:30px;" onclick="saveEntry()">CONFIRM_DATA</button>
+            <button class="btn-main" style="position:static; width:100%; margin-top:25px; background:var(--accent); color:#000;" onclick="saveEntry()">Execute Protocol</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal-settings" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-tech" style="display:block; margin-bottom:30px;">BIOMETRIC_ADJUST</span>
+            <span class="label-refined" style="display:block; margin-bottom:25px;">Metabolic_Config</span>
             <div style="text-align:center;">
-                <span style="font-family:'Orbitron'; font-size:4rem; color:var(--accent); font-style:italic;" id="hl-val">5.0</span>
-                <span class="label-tech">HL_PERIOD</span>
-                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin:40px 0;" oninput="updateHl(this.value)">
+                <span style="font-family:'Playfair Display', serif; font-size:4rem; color:var(--accent); font-style:italic;" id="hl-val">5.0</span>
+                <span class="label-refined" style="display:block; margin-top:-10px;">Hours HL</span>
+                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin:35px 0;" oninput="updateHl(this.value)">
             </div>
-            <button class="btn-opt" style="width:100%;" onclick="closeModals()">RETURN</button>
-            <button onclick="clearAll()" style="color:var(--danger); background:none; border:none; width:100%; margin-top:30px; font-size:0.55rem; font-family:'Orbitron'; opacity:0.5;">WIPE_LOCAL_STORAGE</button>
+            <button class="btn-opt" style="width:100%;" onclick="closeModals()">Close</button>
+            <button onclick="clearAll()" style="color:#444; background:none; border:none; width:100%; margin-top:25px; font-size:0.6rem; font-weight:800; text-decoration:underline;">RESET_DATABASE</button>
         </div>
     </div>
 
 <script>
-    let entries = JSON.parse(localStorage.getItem('caf_v7') || '[]');
-    let hl = parseFloat(localStorage.getItem('caf_hl_v7') || '5');
+    let entries = JSON.parse(localStorage.getItem('caf_v8') || '[]');
+    let hl = parseFloat(localStorage.getItem('caf_hl_v8') || '5');
     let preset = { mg: 0, lbl: "" };
     let chart;
 
@@ -240,10 +249,10 @@
         const display = document.getElementById('mg-display');
         display.innerText = cur.toFixed(2);
 
-        // --- UPDATE PULSE SPEED ---
-        // Plus le taux est haut, plus ça bat vite (de 3s à 0.6s)
-        let speed = 3 - (Math.min(cur, 200) / 100) * 1.2;
-        if (speed < 0.6) speed = 0.6;
+        // --- UPDATE PULSE SPEED (DYNAMIQUE) ---
+        // Vitesse de pulsation de 4s (clean) à 0.8s (boosté à 150mg+)
+        let speed = 4 - (Math.min(cur, 150) / 150) * 3.2;
+        if (speed < 0.8) speed = 0.8;
         display.style.setProperty('--pulse-speed', speed + 's');
         
         // --- SLEEP STATUS ---
@@ -253,9 +262,9 @@
         const dot = b.querySelector('.status-dot');
         const txt = b.querySelector('span');
         
-        if(pred < 50) { dot.style.color = '#CCFF00'; b.style.borderColor = '#222'; txt.innerText = `READY_23H: ${pred.toFixed(0)}MG`; }
-        else if(pred < 100) { dot.style.color = '#FFAA00'; b.style.borderColor = '#FFAA0033'; txt.innerText = `WARN_23H: ${pred.toFixed(0)}MG`; }
-        else { dot.style.color = '#FF003C'; b.style.borderColor = '#FF003C33'; txt.innerText = `CRIT_23H: ${pred.toFixed(0)}MG`; }
+        if(pred < 50) { dot.style.color = '#4CAF50'; txt.innerText = `READY_23H: ${pred.toFixed(0)}MG`; }
+        else if(pred < 100) { dot.style.color = '#FF9800'; txt.innerText = `WARN_23H: ${pred.toFixed(0)}MG`; }
+        else { dot.style.color = '#EF5350'; txt.innerText = `CRIT_23H: ${pred.toFixed(0)}MG`; }
 
         updateChart(now);
         renderHistory();
@@ -264,11 +273,11 @@
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = "";
-        document.getElementById('entry-count').innerText = `${entries.length}_UNITS`;
+        document.getElementById('entry-count').innerText = `${entries.length} UNITS`;
         [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,4).forEach((i, idx) => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}MG @ ${new Date(i.d).getHours()}H${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="delete-btn" onclick="removeEntry(${entries.length - 1 - idx})">DEL</div>`;
+            div.innerHTML = `<div class="log-info"><strong>${i.lbl} / ${i.mg}mg</strong><div>${new Date(i.d).getHours()}H${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="delete-btn" onclick="removeEntry(${entries.length - 1 - idx})">DEL</div>`;
             list.appendChild(div);
         });
     }
@@ -276,7 +285,7 @@
     function saveEntry() {
         const custom = parseFloat(document.getElementById('in-mg').value);
         const mg = custom || preset.mg;
-        const lbl = custom ? "MANUAL" : preset.lbl;
+        const lbl = custom ? "Custom" : preset.lbl;
         const t = document.getElementById('in-t').value;
         if(!mg || !t) return;
         const [h,m] = t.split(':');
@@ -287,7 +296,7 @@
     }
 
     function removeEntry(idx) { entries.splice(idx, 1); saveStorage(); }
-    function saveStorage() { localStorage.setItem('caf_v7', JSON.stringify(entries)); update(); }
+    function saveStorage() { localStorage.setItem('caf_v8', JSON.stringify(entries)); update(); }
     function openModal(id) { 
         document.getElementById(id).style.display = 'flex'; 
         if(id === 'modal-add') document.getElementById('in-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
@@ -298,15 +307,18 @@
         document.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
-    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v7', v); update(); }
+    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v8', v); update(); }
     function clearAll() { if(confirm("FORMAT ALL DATA?")) { entries = []; saveStorage(); location.reload(); } }
 
     function initChart() {
         const ctx = document.getElementById('mainChart').getContext('2d');
+        Chart.defaults.color = '#444';
+        Chart.defaults.font.family = 'Inter';
+
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{ data: [], borderColor: '#CCFF00', borderWidth: 2, tension: 0.2, fill: true, backgroundColor: 'rgba(204, 255, 0, 0.02)', pointRadius: 0 }] },
-            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#333', font: { family: 'Orbitron', size: 8 } }, grid: { color: '#111' } } } }
+            data: { labels: [], datasets: [{ data: [], borderColor: '#CD7F32', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(205, 127, 50, 0.01)', pointRadius: 0 }] },
+            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { font: { size: 9 } }, grid: { color: '#1a1a1a' } } } }
         });
     }
 

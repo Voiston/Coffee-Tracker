@@ -3,216 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAFFEINE PROTOCOL V9</title>
+    <title>Suivi Caféine Pro</title>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@1,900&family=Saira+Condensed:wght@700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
 
         :root {
-            --bg: #0A0A0A;
-            --surface: #121212;
-            --accent: #B8860B; /* Bronze métallique */
-            --text: #F2F2F2;
-            --text-dim: #444444;
-            --radius: 2px;
+            --bg: #0B101B; /* Bleu Anthracite */
+            --surface: #151C2C;
+            --accent: #D4AF37; /* Or / Bronze doux */
+            --text: #FFFFFF;
+            --text-dim: #707A8C;
+            --radius: 12px;
         }
 
         body {
-            font-family: 'Saira Condensed', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0; padding: 0;
             display: flex; flex-direction: column; align-items: center;
-            letter-spacing: 0.05em;
         }
 
-        /* --- DASHBOARD HEADER --- */
+        /* --- HEADER --- */
         .hero {
             width: 100%;
-            padding: 70px 20px 50px;
-            background: linear-gradient(180deg, #111 0%, #0A0A0A 100%);
-            border-bottom: 1px solid #1A1A1A;
+            padding: 80px 20px 50px;
+            background: radial-gradient(circle at center, #1C2538 0%, #0B101B 100%);
             text-align: center;
             position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
         .settings-btn {
-            position: absolute; top: 40px; right: 20px;
-            color: var(--text-dim); font-size: 0.8rem; cursor: pointer;
-            font-weight: 900; border: 1px solid #222; padding: 4px 8px;
+            position: absolute; top: 50px; right: 25px;
+            color: var(--text-dim); font-size: 0.9rem; font-weight: 700;
         }
 
-        .label-tech {
-            font-size: 0.7rem;
+        .label-main {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
             color: var(--accent);
             text-transform: uppercase;
-            font-weight: 900;
+            font-weight: 700;
+            opacity: 0.9;
         }
 
-        /* --- PULSE EFFECT (VISIBLE & MASCULIN) --- */
+        /* --- EFFET PULSE ECLIPSE --- */
         #mg-display {
-            font-family: 'Inter', sans-serif; /* Inter Black Italic */
-            font-size: 6rem;
+            font-size: 5.5rem;
             font-weight: 900;
-            font-style: italic;
             display: block;
-            margin: 5px 0;
+            margin: 10px 0;
             color: var(--text);
-            line-height: 0.9;
             position: relative;
+            z-index: 2;
         }
 
-        @keyframes pulse-shadow {
-            0% { filter: drop-shadow(0 0 5px rgba(184, 134, 11, 0.2)); }
-            50% { filter: drop-shadow(0 0 20px rgba(184, 134, 11, 0.6)); }
-            100% { filter: drop-shadow(0 0 5px rgba(184, 134, 11, 0.2)); }
+        .pulse-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px; height: 180px;
+            background: var(--accent);
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.1;
+            z-index: 1;
+            animation: pulse-aura var(--pulse-speed, 3s) infinite ease-in-out;
         }
 
-        .active-pulse {
-            animation: pulse-shadow var(--pulse-speed, 2s) infinite ease-in-out;
+        @keyframes pulse-aura {
+            0% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
+            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.1); }
+            100% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
         }
 
-        .status-bar {
+        .status-badge {
             display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-            font-size: 0.8rem;
-            font-weight: 900;
-            color: var(--text-dim);
-            text-transform: uppercase;
+            padding: 10px 24px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* --- CONTAINER --- */
-        .container { width: 92%; max-width: 420px; margin-top: 20px; padding-bottom: 140px; }
+        /* --- CONTENU --- */
+        .container { width: 92%; max-width: 420px; margin-top: 25px; padding-bottom: 140px; }
 
         .card {
             background: var(--surface);
-            border-left: 3px solid #1A1A1A;
+            border-radius: var(--radius);
             padding: 20px;
             margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .card-header {
-            font-size: 0.65rem;
+        .card-title {
+            font-size: 0.7rem;
             color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
             margin-bottom: 15px;
-            display: flex; justify-content: space-between;
+            display: block;
         }
 
-        /* --- ACTION BUTTON --- */
+        /* --- BOUTONS --- */
         .btn-main {
             position: fixed; bottom: 30px;
-            width: 88%; max-width: 380px;
-            background: var(--text);
+            width: 85%; max-width: 380px;
+            background: var(--accent);
             color: #000;
             border: none;
             padding: 20px;
             font-size: 1rem;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            z-index: 100;
             border-radius: var(--radius);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            z-index: 100;
         }
 
-        /* --- LOGS --- */
+        /* --- HISTORIQUE --- */
         .log-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px dotted #222;
+            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .log-info strong { font-size: 1rem; color: var(--text); }
-        .log-info div { font-size: 0.7rem; color: var(--text-dim); margin-top: 2px; }
-        .del-btn { color: #333; font-weight: 900; padding: 10px; }
+        .log-info div { font-size: 0.75rem; color: var(--text-dim); margin-top: 3px; }
+        .del-btn { color: #5C667A; font-weight: 700; padding: 10px; }
 
-        /* --- MODALS --- */
+        /* --- MODAL --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.96); display: none;
+            background: rgba(11, 16, 27, 0.95); display: none;
             justify-content: center; align-items: center; z-index: 200;
         }
         .modal {
-            background: #000; width: 85%; padding: 30px;
-            border: 1px solid #222; border-radius: var(--radius);
+            background: var(--surface); width: 85%; padding: 30px;
+            border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);
         }
-        .grid-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .btn-opt {
-            background: #111; border: 1px solid #222; color: #fff;
-            padding: 15px; font-weight: 900; font-family: 'Saira Condensed';
+        .grid-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .btn-choice {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 15px; border-radius: 8px; font-weight: 700;
         }
-        .btn-opt.active { background: var(--accent); color: #000; }
+        .btn-choice.active { background: var(--accent); color: #000; }
         
         input {
-            background: #000; border: 1px solid #222; color: #fff;
-            padding: 15px; width: 100%; margin-bottom: 10px; box-sizing: border-box;
-            font-family: 'Saira Condensed'; font-size: 1.1rem;
+            background: #080C14; border: 1px solid rgba(255,255,255,0.1); color: #fff;
+            padding: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box;
+            border-radius: 8px; font-size: 1rem;
         }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <div class="settings-btn" onclick="openModal('modal-settings')">CONFIG_01</div>
-        <span class="label-tech">METABOLIC_INDEX</span>
-        <span id="mg-display" class="active-pulse">0.00</span>
-        <div class="status-bar" id="sleep-badge">
-            <span id="sleep-txt">ANALYZING_SYSTEM</span>
+        <div class="pulse-circle" id="pulse"></div>
+        <div class="settings-btn" onclick="openModal('modal-settings')">RÉGLAGES</div>
+        <span class="label-main">Taux de caféine actuel</span>
+        <span id="mg-display">0.00</span>
+        <div class="status-badge" id="sleep-badge">
+            <span id="sleep-txt">Analyse en cours...</span>
         </div>
     </div>
 
     <div class="container">
         <div class="card">
-            <div class="card-header"><span>ESTIMATED_DECAY</span><span>V9_TECH</span></div>
+            <span class="card-title">Évolution sur 12 heures</span>
             <canvas id="mainChart"></canvas>
         </div>
 
         <div class="card">
-            <div class="card-header"><span>RECENT_UNITS</span><span id="entry-count">0</span></div>
+            <span class="card-title">Historique des prises</span>
             <div id="history-list"></div>
         </div>
     </div>
 
-    <button class="btn-main" onclick="openModal('modal-add')">ADD_DATA_POINT +</button>
+    <button class="btn-main" onclick="openModal('modal-add')">Ajouter un café +</button>
 
     <div class="modal-overlay" id="modal-add" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-tech" style="display:block; margin-bottom:20px;">INPUT_DOSE</span>
-            <div class="grid-opts">
-                <button class="btn-opt" id="p-7" onclick="setPreset(70, 'FORCE_7', 'p-7')">F7 (70MG)</button>
-                <button class="btn-opt" id="p-d" onclick="setPreset(3, 'DECAF', 'p-d')">DCF (3MG)</button>
+            <span class="card-title">Nouvelle dose</span>
+            <div class="grid-choices">
+                <button class="btn-choice" id="p-7" onclick="setPreset(70, 'Espresso F7', 'p-7')">F7 (70mg)</button>
+                <button class="btn-choice" id="p-d" onclick="setPreset(3, 'Déca', 'p-d')">Déca (3mg)</button>
             </div>
-            <input type="number" id="in-mg" placeholder="MG_CUSTOM">
+            <input type="number" id="in-mg" placeholder="Dose personnalisée (mg)">
             <input type="time" id="in-t">
-            <button class="btn-main" style="position:static; width:100%; margin-top:20px; background:var(--accent);" onclick="saveEntry()">CONFIRM</button>
+            <button class="btn-main" style="position:static; width:100%; margin-top:20px;" onclick="saveEntry()">Enregistrer</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="modal-settings" onclick="closeModals()">
         <div class="modal" onclick="event.stopPropagation()">
-            <span class="label-tech" style="display:block; margin-bottom:20px;">HALF_LIFE_ADJUST</span>
-            <div style="text-align:center;">
-                <span style="font-family:'Inter'; font-size:4rem; font-weight:900; font-style:italic;" id="hl-val">5.0</span>
-                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin:30px 0;" oninput="updateHl(this.value)">
+            <span class="card-title">Profil métabolique</span>
+            <div style="text-align:center; padding: 20px 0;">
+                <span style="font-size:3.5rem; font-weight:900; color:var(--accent);" id="hl-val">5.0</span>
+                <span class="card-title">Heures (Demi-vie)</span>
+                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin-top:30px;" oninput="updateHl(this.value)">
             </div>
-            <button class="btn-opt" style="width:100%;" onclick="closeModals()">BACK</button>
-            <button onclick="clearAll()" style="color:#222; background:none; border:none; width:100%; margin-top:20px; font-size:0.6rem; font-weight:900;">ERASE_ALL_DATA</button>
+            <button class="btn-choice" style="width:100%;" onclick="closeModals()">Fermer</button>
+            <button onclick="clearAll()" style="color:#444; background:none; border:none; width:100%; margin-top:25px; font-size:0.7rem; font-weight:700;">RÉINITIALISER TOUTES LES DONNÉES</button>
         </div>
     </div>
 
 <script>
-    let entries = JSON.parse(localStorage.getItem('caf_v9') || '[]');
-    let hl = parseFloat(localStorage.getItem('caf_hl_v9') || '5');
+    let entries = JSON.parse(localStorage.getItem('caf_v10') || '[]');
+    let hl = parseFloat(localStorage.getItem('caf_hl_v10') || '5');
     let preset = { mg: 0, lbl: "" };
     let chart;
 
     function init() {
         initChart();
         update();
-        setInterval(update, 10000);
+        setInterval(update, 15000);
         document.getElementById('hl-range').value = hl;
         document.getElementById('hl-val').innerText = hl.toFixed(1);
     }
@@ -227,21 +240,20 @@
     function update() {
         const now = new Date();
         const cur = calc(now);
-        const display = document.getElementById('mg-display');
-        display.innerText = cur.toFixed(2);
+        document.getElementById('mg-display').innerText = cur.toFixed(1);
 
-        // --- PULSE DYNAMIQUE ---
-        let speed = 3 - (Math.min(cur, 150) / 150) * 2.5;
-        display.style.setProperty('--pulse-speed', Math.max(speed, 0.5) + 's');
+        // Update Pulse
+        let speed = 4 - (Math.min(cur, 150) / 150) * 3.5;
+        document.getElementById('pulse').style.setProperty('--pulse-speed', Math.max(speed, 0.5) + 's');
         
-        // --- SLEEP STATUS ---
+        // Sleep Status
         const ton = new Date(); ton.setHours(23,0,0);
         const pred = calc(ton);
         const txt = document.getElementById('sleep-txt');
         
-        if(pred < 50) { txt.style.color = '#CCFF00'; txt.innerText = `SLEEP_OPTIMAL // ${pred.toFixed(0)}MG`; }
-        else if(pred < 100) { txt.style.color = '#FFAA00'; txt.innerText = `SLEEP_RISK // ${pred.toFixed(0)}MG`; }
-        else { txt.style.color = '#FF003C'; txt.innerText = `SLEEP_CRITICAL // ${pred.toFixed(0)}MG`; }
+        if(pred < 50) { txt.style.color = '#4CAF50'; txt.innerText = `Sommeil idéal (23h) : ${pred.toFixed(0)}mg`; }
+        else if(pred < 100) { txt.style.color = '#FF9800'; txt.innerText = `Impact léger (23h) : ${pred.toFixed(0)}mg`; }
+        else { txt.style.color = '#F44336'; txt.innerText = `Impact critique (23h) : ${pred.toFixed(0)}mg`; }
 
         updateChart(now);
         renderHistory();
@@ -250,11 +262,10 @@
     function renderHistory() {
         const list = document.getElementById('history-list');
         list.innerHTML = "";
-        document.getElementById('entry-count').innerText = entries.length;
         [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,4).forEach((i, idx) => {
             const div = document.createElement('div');
             div.className = 'log-item';
-            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}MG @ ${new Date(i.d).getHours()}H${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="del-btn" onclick="removeEntry(${entries.length - 1 - idx})">DEL</div>`;
+            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}mg • Pris à ${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="del-btn" onclick="removeEntry(${entries.length - 1 - idx})">Suppr.</div>`;
             list.appendChild(div);
         });
     }
@@ -262,7 +273,7 @@
     function saveEntry() {
         const custom = parseFloat(document.getElementById('in-mg').value);
         const mg = custom || preset.mg;
-        const lbl = custom ? "CUSTOM" : preset.lbl;
+        const lbl = custom ? "Perso" : preset.lbl;
         const t = document.getElementById('in-t').value;
         if(!mg || !t) return;
         const [h,m] = t.split(':');
@@ -273,7 +284,7 @@
     }
 
     function removeEntry(idx) { entries.splice(idx, 1); saveStorage(); }
-    function saveStorage() { localStorage.setItem('caf_v9', JSON.stringify(entries)); update(); }
+    function saveStorage() { localStorage.setItem('caf_v10', JSON.stringify(entries)); update(); }
     function openModal(id) { 
         document.getElementById(id).style.display = 'flex'; 
         if(id === 'modal-add') document.getElementById('in-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
@@ -281,18 +292,18 @@
     function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
     function setPreset(mg, lbl, id) {
         preset = { mg, lbl };
-        document.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
-    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v9', v); update(); }
-    function clearAll() { if(confirm("FORMAT ALL?")) { entries = []; saveStorage(); location.reload(); } }
+    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v10', v); update(); }
+    function clearAll() { if(confirm("Supprimer toutes les données ?")) { entries = []; saveStorage(); location.reload(); } }
 
     function initChart() {
         const ctx = document.getElementById('mainChart').getContext('2d');
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{ data: [], borderColor: '#B8860B', borderWidth: 2, tension: 0.1, fill: false, pointRadius: 0 }] },
-            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#333', font: { family: 'Saira Condensed', size: 10 } }, grid: { color: '#111' } } } }
+            data: { labels: [], datasets: [{ data: [], borderColor: '#D4AF37', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(212, 175, 55, 0.05)', pointRadius: 0 }] },
+            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#444', font: { size: 10 } }, grid: { display: false } } } }
         });
     }
 
@@ -300,7 +311,7 @@
         const labels = []; const points = [];
         for(let i=0; i<=12; i+=2) {
             const t = new Date(now.getTime() + i*3600000);
-            labels.push(t.getHours() + 'H');
+            labels.push(t.getHours() + 'h');
             points.push(calc(t).toFixed(1));
         }
         chart.data.labels = labels;

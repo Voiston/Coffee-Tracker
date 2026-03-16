@@ -2,324 +2,153 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Suivi Caféine Pro</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stress Miner</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-
-        :root {
-            --bg: #0B101B; /* Bleu Anthracite */
-            --surface: #151C2C;
-            --accent: #D4AF37; /* Or / Bronze doux */
-            --text: #FFFFFF;
-            --text-dim: #707A8C;
-            --radius: 12px;
-        }
-
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        /* --- HEADER --- */
-        .hero {
-            width: 100%;
-            padding: 80px 20px 50px;
-            background: radial-gradient(circle at center, #1C2538 0%, #0B101B 100%);
-            text-align: center;
-            position: relative;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .settings-btn {
-            position: absolute; top: 50px; right: 25px;
-            color: var(--text-dim); font-size: 0.9rem; font-weight: 700;
-        }
-
-        .label-main {
-            font-size: 0.75rem;
-            letter-spacing: 2px;
-            color: var(--accent);
-            text-transform: uppercase;
-            font-weight: 700;
-            opacity: 0.9;
-        }
-
-        /* --- EFFET PULSE ECLIPSE --- */
-        #mg-display {
-            font-size: 5.5rem;
-            font-weight: 900;
-            display: block;
-            margin: 10px 0;
-            color: var(--text);
-            position: relative;
-            z-index: 2;
-        }
-
-        .pulse-circle {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 180px; height: 180px;
-            background: var(--accent);
-            border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.1;
-            z-index: 1;
-            animation: pulse-aura var(--pulse-speed, 3s) infinite ease-in-out;
-        }
-
-        @keyframes pulse-aura {
-            0% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
-            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.1); }
-            100% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
-        }
-
-        .status-badge {
-            display: inline-flex;
-            padding: 10px 24px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-top: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* --- CONTENU --- */
-        .container { width: 92%; max-width: 420px; margin-top: 25px; padding-bottom: 140px; }
-
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .card-title {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        /* --- BOUTONS --- */
-        .btn-main {
-            position: fixed; bottom: 30px;
-            width: 85%; max-width: 380px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 20px;
-            font-size: 1rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            border-radius: var(--radius);
-            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
-            z-index: 100;
-        }
-
-        /* --- HISTORIQUE --- */
-        .log-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .log-info strong { font-size: 1rem; color: var(--text); }
-        .log-info div { font-size: 0.75rem; color: var(--text-dim); margin-top: 3px; }
-        .del-btn { color: #5C667A; font-weight: 700; padding: 10px; }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(11, 16, 27, 0.95); display: none;
-            justify-content: center; align-items: center; z-index: 200;
-        }
-        .modal {
-            background: var(--surface); width: 85%; padding: 30px;
-            border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);
-        }
-        .grid-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .btn-choice {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            padding: 15px; border-radius: 8px; font-weight: 700;
-        }
-        .btn-choice.active { background: var(--accent); color: #000; }
-        
-        input {
-            background: #080C14; border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            padding: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box;
-            border-radius: 8px; font-size: 1rem;
-        }
+        body { margin: 0; background: #050505; color: #00ff41; font-family: 'Courier New', monospace; overflow: hidden; }
+        canvas { display: block; filter: blur(0.5px); }
+        #ui { position: absolute; top: 10px; left: 10px; background: rgba(0,20,0,0.8); padding: 15px; border: 1px solid #00ff41; border-radius: 5px; font-size: 12px; }
+        .btn { background: #00ff41; color: black; border: none; padding: 5px 10px; margin-top: 5px; cursor: pointer; font-weight: bold; width: 100%; }
+        .btn:disabled { background: #004411; color: #008822; }
+        #gflops-display { color: #ff3300; font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
 <body>
-
-    <div class="hero">
-        <div class="pulse-circle" id="pulse"></div>
-        <div class="settings-btn" onclick="openModal('modal-settings')">RÉGLAGES</div>
-        <span class="label-main">Taux de caféine actuel</span>
-        <span id="mg-display">0.00</span>
-        <div class="status-badge" id="sleep-badge">
-            <span id="sleep-txt">Analyse en cours...</span>
-        </div>
+    <div id="ui">
+        <div>DATA: <span id="data-count">0</span> TB</div>
+        <hr>
+        <div>GÉNÉRATION: <span id="gen">1</span></div>
+        <div>POPULATION: <span id="pop-text">500</span></div>
+        <div id="gflops-display"><span id="gflops">0.00</span> GFLOPS</div>
+        <hr>
+        <button class="btn" id="up-pop">UP POPULATION (Coût: 10)</button>
+        <button class="btn" id="up-speed">UP MUTATION (Coût: 50)</button>
     </div>
-
-    <div class="container">
-        <div class="card">
-            <span class="card-title">Évolution sur 12 heures</span>
-            <canvas id="mainChart"></canvas>
-        </div>
-
-        <div class="card">
-            <span class="card-title">Historique des prises</span>
-            <div id="history-list"></div>
-        </div>
-    </div>
-
-    <button class="btn-main" onclick="openModal('modal-add')">Ajouter un café +</button>
-
-    <div class="modal-overlay" id="modal-add" onclick="closeModals()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <span class="card-title">Nouvelle dose</span>
-            <div class="grid-choices">
-                <button class="btn-choice" id="p-7" onclick="setPreset(70, 'Espresso F7', 'p-7')">F7 (70mg)</button>
-                <button class="btn-choice" id="p-d" onclick="setPreset(3, 'Déca', 'p-d')">Déca (3mg)</button>
-            </div>
-            <input type="number" id="in-mg" placeholder="Dose personnalisée (mg)">
-            <input type="time" id="in-t">
-            <button class="btn-main" style="position:static; width:100%; margin-top:20px;" onclick="saveEntry()">Enregistrer</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modal-settings" onclick="closeModals()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <span class="card-title">Profil métabolique</span>
-            <div style="text-align:center; padding: 20px 0;">
-                <span style="font-size:3.5rem; font-weight:900; color:var(--accent);" id="hl-val">5.0</span>
-                <span class="card-title">Heures (Demi-vie)</span>
-                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin-top:30px;" oninput="updateHl(this.value)">
-            </div>
-            <button class="btn-choice" style="width:100%;" onclick="closeModals()">Fermer</button>
-            <button onclick="clearAll()" style="color:#444; background:none; border:none; width:100%; margin-top:25px; font-size:0.7rem; font-weight:700;">RÉINITIALISER TOUTES LES DONNÉES</button>
-        </div>
-    </div>
+    <canvas id="sim"></canvas>
 
 <script>
-    let entries = JSON.parse(localStorage.getItem('caf_v10') || '[]');
-    let hl = parseFloat(localStorage.getItem('caf_hl_v10') || '5');
-    let preset = { mg: 0, lbl: "" };
-    let chart;
+const canvas = document.getElementById('sim');
+const ctx = canvas.getContext('2d');
 
-    function init() {
-        initChart();
-        update();
-        setInterval(update, 15000);
-        document.getElementById('hl-range').value = hl;
-        document.getElementById('hl-val').innerText = hl.toFixed(1);
+// Variables de jeu
+let data = 0;
+let popSize = 500;
+let mutationRate = 0.02;
+let lifespan = 200;
+let generation = 1;
+let count = 0;
+let population = [];
+let target = { x: 0, y: 50 };
+let lastTime = performance.now();
+let frames = 0;
+
+function init() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    target.x = canvas.width / 2;
+    for(let i=0; i<popSize; i++) population.push(new SmartDot());
+}
+
+class SmartDot {
+    constructor(dna) {
+        this.pos = { x: canvas.width / 2, y: canvas.height - 50 };
+        this.vel = { x: 0, y: 0 };
+        this.dna = dna || Array.from({length: lifespan}, () => ({ x: Math.random()*2-1, y: Math.random()*2-1 }));
+        this.fitness = 0;
+        this.dead = false;
+        this.reached = false;
     }
 
-    function calc(time) {
-        return entries.reduce((acc, i) => {
-            let diff = (time - new Date(i.d)) / 3600000;
-            return acc + (diff < 0 ? 0 : i.mg * Math.pow(0.5, diff / hl));
-        }, 0);
-    }
+    update() {
+        if (this.dead || this.reached) return;
+        let move = this.dna[count];
+        this.vel.x += move.x;
+        this.vel.y += move.y;
+        this.pos.x += this.vel.x;
+        this.pos.y += this.vel.y;
 
-    function update() {
-        const now = new Date();
-        const cur = calc(now);
-        document.getElementById('mg-display').innerText = cur.toFixed(1);
-
-        // Update Pulse
-        let speed = 4 - (Math.min(cur, 150) / 150) * 3.5;
-        document.getElementById('pulse').style.setProperty('--pulse-speed', Math.max(speed, 0.5) + 's');
-        
-        // Sleep Status
-        const ton = new Date(); ton.setHours(23,0,0);
-        const pred = calc(ton);
-        const txt = document.getElementById('sleep-txt');
-        
-        if(pred < 50) { txt.style.color = '#4CAF50'; txt.innerText = `Sommeil idéal (23h) : ${pred.toFixed(0)}mg`; }
-        else if(pred < 100) { txt.style.color = '#FF9800'; txt.innerText = `Impact léger (23h) : ${pred.toFixed(0)}mg`; }
-        else { txt.style.color = '#F44336'; txt.innerText = `Impact critique (23h) : ${pred.toFixed(0)}mg`; }
-
-        updateChart(now);
-        renderHistory();
-    }
-
-    function renderHistory() {
-        const list = document.getElementById('history-list');
-        list.innerHTML = "";
-        [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,4).forEach((i, idx) => {
-            const div = document.createElement('div');
-            div.className = 'log-item';
-            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}mg • Pris à ${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="del-btn" onclick="removeEntry(${entries.length - 1 - idx})">Suppr.</div>`;
-            list.appendChild(div);
-        });
-    }
-
-    function saveEntry() {
-        const custom = parseFloat(document.getElementById('in-mg').value);
-        const mg = custom || preset.mg;
-        const lbl = custom ? "Perso" : preset.lbl;
-        const t = document.getElementById('in-t').value;
-        if(!mg || !t) return;
-        const [h,m] = t.split(':');
-        const d = new Date(); d.setHours(h,m,0);
-        entries.push({mg, lbl, d});
-        saveStorage();
-        closeModals();
-    }
-
-    function removeEntry(idx) { entries.splice(idx, 1); saveStorage(); }
-    function saveStorage() { localStorage.setItem('caf_v10', JSON.stringify(entries)); update(); }
-    function openModal(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        if(id === 'modal-add') document.getElementById('in-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
-    }
-    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-    function setPreset(mg, lbl, id) {
-        preset = { mg, lbl };
-        document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v10', v); update(); }
-    function clearAll() { if(confirm("Supprimer toutes les données ?")) { entries = []; saveStorage(); location.reload(); } }
-
-    function initChart() {
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        chart = new Chart(ctx, {
-            type: 'line',
-            data: { labels: [], datasets: [{ data: [], borderColor: '#D4AF37', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(212, 175, 55, 0.05)', pointRadius: 0 }] },
-            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#444', font: { size: 10 } }, grid: { display: false } } } }
-        });
-    }
-
-    function updateChart(now) {
-        const labels = []; const points = [];
-        for(let i=0; i<=12; i+=2) {
-            const t = new Date(now.getTime() + i*3600000);
-            labels.push(t.getHours() + 'h');
-            points.push(calc(t).toFixed(1));
+        if (this.pos.x < 0 || this.pos.x > canvas.width || this.pos.y < 0 || this.pos.y > canvas.height) this.dead = true;
+        let d = Math.hypot(this.pos.x - target.x, this.pos.y - target.y);
+        if (d < 15) { 
+            this.reached = true; 
+            data += 1; // On gagne de la data !
         }
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = points;
-        chart.update('none');
     }
 
-    init();
+    draw() {
+        ctx.fillStyle = this.reached ? '#ffffff' : '#00ff41';
+        ctx.globalAlpha = this.reached ? 1.0 : 0.2;
+        ctx.fillRect(this.pos.x, this.pos.y, 3, 3);
+    }
+}
+
+function calculateGFLOPS(currentFPS) {
+    // Estimation grossière : chaque update de bot = ~15 opérations flottantes (hypot, additions, multiplications)
+    // + rendu + logique de sélection.
+    let opsPerFrame = popSize * 25; 
+    let totalOpsPerSec = opsPerFrame * currentFPS;
+    return (totalOpsPerSec / 1e9).toFixed(4);
+}
+
+function nextGen() {
+    population.sort((a, b) => {
+        let da = Math.hypot(a.pos.x - target.x, a.pos.y - target.y);
+        let db = Math.hypot(b.pos.x - target.x, b.pos.y - target.y);
+        return da - db;
+    });
+
+    let bestDNA = population[0].dna;
+    population = Array.from({length: popSize}, () => {
+        let newDna = bestDNA.map(v => Math.random() < mutationRate ? {x:Math.random()*2-1, y:Math.random()*2-1} : v);
+        return new SmartDot(newDna);
+    });
+    
+    count = 0;
+    generation++;
+    document.getElementById('gen').innerText = generation;
+}
+
+// Upgrades
+document.getElementById('up-pop').onclick = () => {
+    if(data >= 10) { data -= 10; popSize += 200; }
+};
+document.getElementById('up-speed').onclick = () => {
+    if(data >= 50) { data -= 50; mutationRate += 0.05; }
+};
+
+function loop() {
+    ctx.fillStyle = 'black';
+    ctx.globalAlpha = 0.3; // Traînée de mouvement
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+
+    ctx.fillStyle = 'red';
+    ctx.beginPath(); ctx.arc(target.x, target.y, 15, 0, Math.PI*2); ctx.fill();
+
+    population.forEach(dot => { dot.update(); dot.draw(); });
+
+    count++;
+    if (count >= lifespan) nextGen();
+
+    frames++;
+    let now = performance.now();
+    if (now - lastTime >= 1000) {
+        document.getElementById('gflops').innerText = calculateGFLOPS(frames);
+        document.getElementById('data-count').innerText = data;
+        document.getElementById('pop-text').innerText = popSize;
+        frames = 0;
+        lastTime = now;
+    }
+    
+    // Désactiver boutons si pas assez de data
+    document.getElementById('up-pop').disabled = data < 10;
+    document.getElementById('up-speed').disabled = data < 50;
+
+    requestAnimationFrame(loop);
+}
+
+init();
+loop();
 </script>
 </body>
 </html>

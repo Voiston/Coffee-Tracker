@@ -12,308 +12,194 @@
         :root {
             --primary: #6F4E37;
             --primary-light: #A67B5B;
-            --accent: #C62828;
             --bg: #FDFCFB;
-            --card-bg: #FFFFFF;
             --text: #2D241E;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
         }
 
         body {
             font-family: -apple-system, system-ui, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* --- HEADER / DISPLAY --- */
         .hero {
             width: 100%;
-            padding: 60px 20px 40px;
+            padding: 50px 20px 30px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white;
-            text-align: center;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            box-shadow: 0 10px 20px rgba(111, 78, 55, 0.2);
+            color: white; text-align: center;
+            border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;
         }
 
-        #mg-display {
-            font-size: 5rem;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 5px;
+        #mg-display { font-size: 4.5rem; font-weight: 800; display: block; }
+
+        /* Badge Sommeil */
+        .sleep-status {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-top: 15px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
-        .hero small {
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-        }
+        .status-green { background-color: var(--success) !important; color: white; }
+        .status-orange { background-color: var(--warning) !important; color: white; }
+        .status-red { background-color: var(--danger) !important; color: white; }
 
-        /* --- MAIN BUTTON --- */
-        .fab-container {
-            margin-top: -30px;
-            z-index: 10;
-        }
-
+        .fab-container { margin-top: -25px; z-index: 10; }
         .btn-add-main {
-            background: var(--text);
-            color: white;
-            border: none;
-            padding: 18px 35px;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: transform 0.2s;
+            background: var(--text); color: white; border: none;
+            padding: 15px 30px; border-radius: 50px; font-weight: 700;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .btn-add-main:active { transform: scale(0.95); }
-
-        /* --- MODAL --- */
+        /* Modal & UI Elements */
         .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: flex-end;
-            z-index: 100;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); display: none; align-items: flex-end; z-index: 100;
             backdrop-filter: blur(4px);
         }
-
         .modal {
-            background: white;
-            width: 100%;
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            padding: 30px 20px env(safe-area-inset-bottom);
-            box-sizing: border-box;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-out;
+            background: white; width: 100%; border-top-left-radius: 30px; border-top-right-radius: 30px;
+            padding: 30px 20px env(safe-area-inset-bottom); box-sizing: border-box;
+            transform: translateY(100%); transition: transform 0.3s ease-out;
         }
-
         .modal.active { transform: translateY(0); }
-
-        .modal-title {
-            font-size: 1.3rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            display: block;
-        }
-
-        .option-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .opt-btn {
-            background: #F5F5F5;
-            border: 2px solid transparent;
-            padding: 20px 10px;
-            border-radius: 20px;
-            font-weight: 700;
-            text-align: center;
-            transition: 0.2s;
-        }
-
-        .opt-btn.active {
-            border-color: var(--primary);
-            background: #FDF7F2;
-            color: var(--primary);
-        }
-
-        .opt-btn.decaf.active {
-            border-color: var(--accent);
-            background: #FFF5F5;
-            color: var(--accent);
-        }
-
-        .inputs-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        input {
-            background: #F5F5F5;
-            border: none;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .btn-save {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 18px;
-            border-radius: 15px;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-top: 25px;
-        }
-
-        /* --- HISTORY --- */
-        .history-container {
-            width: 100%;
-            max-width: 400px;
-            margin-top: 40px;
-            padding: 0 20px 100px;
-            box-sizing: border-box;
-        }
-
-        .history-item {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .opt-btn { background: #F5F5F5; padding: 20px; border-radius: 20px; font-weight: 700; text-align: center; }
+        .opt-btn.active { border: 2px solid var(--primary); background: #FDF7F2; }
+        
+        .history-container { width: 100%; max-width: 400px; margin-top: 30px; padding: 0 20px 100px; box-sizing: border-box; }
+        .history-item { background: white; padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
     </style>
 </head>
 <body>
 
     <div class="hero">
-        <small>Taux de caféine</small>
+        <small>Taux actuel</small>
         <span id="mg-display">0.00</span>
-        <small>Milligrammes</small>
+        
+        <div id="sleep-badge" class="sleep-status">
+            Analyse du sommeil...
+        </div>
     </div>
 
     <div class="fab-container">
-        <button class="btn-add-main" onclick="openModal()">
-            <span>+</span> Ajouter un café
-        </button>
+        <button class="btn-add-main" onclick="openModal()">+ Ajouter un café</button>
     </div>
 
-    <div class="history-container" id="history-list">
-        </div>
+    <div class="history-container" id="history-list"></div>
 
-    <div class="modal-overlay" id="overlay" onclick="closeModal(event)">
+    <div class="modal-overlay" id="overlay" onclick="closeModal()">
         <div class="modal" id="modal" onclick="event.stopPropagation()">
-            <span class="modal-title">Quel café ?</span>
-            
+            <span style="font-weight:800; display:block; margin-bottom:20px;">Nouvelle dose</span>
             <div class="option-grid">
-                <div class="opt-btn" id="opt-7" onclick="selectType(70, 'Force 7', 'opt-7')">
-                    ☕ Force 7<br><small>70mg</small>
-                </div>
-                <div class="opt-btn decaf" id="opt-decaf" onclick="selectType(3, 'Décaf', 'opt-decaf')">
-                    🔴 Décaf<br><small>3mg</small>
-                </div>
+                <div class="opt-btn" id="opt-7" onclick="selectType(70, 'Force 7', 'opt-7')">☕ Force 7</div>
+                <div class="opt-btn" id="opt-decaf" onclick="selectType(3, 'Décaf', 'opt-decaf')">🔴 Décaf</div>
             </div>
-
-            <label style="font-size: 0.8rem; font-weight: 700; color: #888;">PERSONNALISÉ / HEURE</label>
-            <div class="inputs-row">
-                <input type="number" id="custom-mg" placeholder="mg">
-                <input type="time" id="custom-time">
+            <div style="display:flex; gap:10px;">
+                <input type="number" id="custom-mg" placeholder="mg" style="width:40%; padding:15px; border-radius:12px; border:1px solid #eee;">
+                <input type="time" id="custom-time" style="width:60%; padding:15px; border-radius:12px; border:1px solid #eee;">
             </div>
-
-            <button class="btn-save" onclick="saveEntry()">Enregistrer</button>
+            <button onclick="saveEntry()" style="width:100%; background:var(--primary); color:white; padding:18px; border-radius:15px; border:none; font-weight:700; margin-top:20px;">Enregistrer</button>
         </div>
     </div>
-
-    <button onclick="clearAll()" style="color: #ccc; background: none; border: none; font-size: 0.7rem; margin-bottom: 30px;">Réinitialiser tout</button>
 
 <script>
     let entries = [];
     let selectedMg = 0;
     let selectedLabel = "";
-    const HL = 5;
+    const HL = 5; // Demi-vie moyenne
 
-    // --- LOGIQUE MODAL ---
     function openModal() {
         document.getElementById('overlay').style.display = 'flex';
         setTimeout(() => document.getElementById('modal').classList.add('active'), 10);
-        document.getElementById('custom-time').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
+        document.getElementById('custom-time').value = new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'});
     }
 
-    function closeModal(e) {
+    function closeModal() {
         document.getElementById('modal').classList.remove('active');
         setTimeout(() => document.getElementById('overlay').style.display = 'none', 300);
     }
 
     function selectType(mg, label, id) {
-        selectedMg = mg;
-        selectedLabel = label;
+        selectedMg = mg; selectedLabel = label;
         document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        document.getElementById('custom-mg').value = ""; // Clear custom if preset selected
     }
 
-    // --- LOGIQUE DONNÉES ---
     function saveEntry() {
-        let finalMg = selectedMg;
-        let finalLabel = selectedLabel;
-
         const customMg = parseFloat(document.getElementById('custom-mg').value);
-        if(customMg) {
-            finalMg = customMg;
-            finalLabel = "Perso";
-        }
-
+        let finalMg = customMg || selectedMg;
+        let finalLabel = customMg ? "Perso" : selectedLabel;
         const timeVal = document.getElementById('custom-time').value;
-        if(!finalMg || !timeVal) return alert("Choisis un café !");
+        if(!finalMg || !timeVal) return;
 
         const [h, m] = timeVal.split(':');
         const d = new Date(); d.setHours(h, m, 0);
-
         entries.push({mg: finalMg, label: finalLabel, d: d});
-        
-        localStorage.setItem('caf_pro_v1', JSON.stringify(entries));
-        closeModal();
-        update();
-        
-        // Reset selections
-        selectedMg = 0;
-        document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        localStorage.setItem('caf_pro_v2', JSON.stringify(entries));
+        closeModal(); update();
+    }
+
+    function calculateAtTime(targetDate) {
+        let total = 0;
+        entries.forEach(i => {
+            let diff = (targetDate - new Date(i.d)) / 3600000;
+            if(diff < 0) diff = 0;
+            total += i.mg * Math.pow(0.5, diff / HL);
+        });
+        return total;
     }
 
     function update() {
         const now = new Date();
-        let total = 0;
+        const currentMg = calculateAtTime(now);
+        
+        // Prédiction à 23h
+        const tonight = new Date();
+        tonight.setHours(23, 0, 0);
+        // Si il est déjà après 23h, on prédit pour demain 23h ou on reste sur aujourd'hui
+        const predictedMg = calculateAtTime(tonight);
+
+        document.getElementById('mg-display').innerText = currentMg.toFixed(2);
+
+        // Mise à jour du Badge Sommeil
+        const badge = document.getElementById('sleep-badge');
+        badge.classList.remove('status-green', 'status-orange', 'status-red');
+
+        if (predictedMg < 50) {
+            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Sommeil OK ✅)`;
+            badge.classList.add('status-green');
+        } else if (predictedMg < 100) {
+            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Risque moyen ⚠️)`;
+            badge.classList.add('status-orange');
+        } else {
+            badge.innerText = `Prédiction 23h : ${predictedMg.toFixed(0)}mg (Sommeil perturbé ❌)`;
+            badge.classList.add('status-red');
+        }
+
+        // Liste historique
         const list = document.getElementById('history-list');
         list.innerHTML = "";
-
-        entries.sort((a,b) => b.d - a.d).forEach(i => {
-            let diff = (now - new Date(i.d)) / 3600000;
-            if(diff < 0) diff = 0;
-            const current = i.mg * Math.pow(0.5, diff / HL);
-            total += current;
-
-            if(current > 0.1) {
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `<div><strong>${i.label}</strong><br><small>${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</small></div>
-                                 <div style="color:var(--primary); font-weight:800">+${current.toFixed(1)} mg</div>`;
-                list.appendChild(div);
-            }
+        entries.sort((a,b) => new Date(b.d) - new Date(a.d)).forEach(i => {
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            div.innerHTML = `<span><strong>${i.label}</strong></span><span>${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</span>`;
+            list.appendChild(div);
         });
-        document.getElementById('mg-display').innerText = total.toFixed(2);
     }
 
-    function clearAll() { if(confirm("Effacer ?")) { entries = []; localStorage.clear(); update(); } }
-
-    // Init
-    const saved = localStorage.getItem('caf_pro_v1');
+    const saved = localStorage.getItem('caf_pro_v2');
     if(saved) entries = JSON.parse(saved);
     update();
-    setInterval(update, 5000);
+    setInterval(update, 10000);
 </script>
 </body>
 </html>

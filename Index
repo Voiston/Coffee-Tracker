@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Caféine Tracker Perso</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/924/924514.png">
+
+    <style>
+        :root { --main-coffee: #6f4e37; --decaf-color: #c62828; --bg-color: #f8f5f2; }
+        body { font-family: system-ui, sans-serif; background-color: var(--bg-color); margin: 0; padding: env(safe-area-inset-top) 15px; display: flex; justify-content: center; }
+        .card { width: 100%; max-width: 400px; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-top: 20px; }
+        .display { text-align: center; background: var(--main-coffee); color: white; border-radius: 20px; padding: 30px 10px; margin-bottom: 25px; }
+        #mg-value { font-size: 4rem; font-weight: 800; display: block; line-height: 1; }
+        
+        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        button { border: none; border-radius: 15px; padding: 18px 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+        button:active { opacity: 0.7; transform: scale(0.96); }
+        
+        .btn-nespresso { background: #efebe9; color: #3e2723; border: 2px solid #3e2723; }
+        .btn-decaf { background: #ffebee; color: var(--decaf-color); border: 2px solid var(--decaf-color); }
+        .btn-add { background: var(--main-coffee); color: white; grid-column: span 2; margin-top: 10px; }
+        
+        .history { border-top: 1px solid #eee; padding-top: 15px; margin-top: 10px; max-height: 200px; overflow-y: auto; }
+        .item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #fafafa; font-size: 0.9rem; }
+        .btn-undo { background: none; color: #999; font-size: 0.7rem; text-decoration: underline; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="display">
+        <span id="mg-value">0.00</span>
+        <small>mg de caféine estimée</small>
+    </div>
+
+    <div class="grid-buttons">
+        <button class="btn-nespresso" onclick="quick(70, 'Force 7')">☕ Force 7<br><small>70mg</small></button>
+        <button class="btn-decaf" onclick="quick(3, 'Décaf')">🔴 Décaféiné<br><small>3mg</small></button>
+        
+        <div style="grid-column: span 2; display: flex; gap: 5px; margin-top: 10px;">
+            <input type="number" id="custom-mg" placeholder="mg" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd;">
+            <input type="time" id="custom-time" style="flex: 1.5; padding: 12px; border-radius: 10px; border: 1px solid #ddd;">
+        </div>
+        <button class="btn-add" onclick="addManual()">Enregistrer l'heure choisie</button>
+    </div>
+
+    <div class="history" id="history"></div>
+    
+    <button class="btn-undo" onclick="undo()">Supprimer le dernier ajout</button>
+    <button onclick="reset()" style="width:100%; background:none; border:none; color:#ccc; font-size: 0.7rem; margin-top: 20px;">Réinitialiser la journée</button>
+</div>
+
+<script>
+    let data = [];
+    const HL = 5; // Demi-vie
+
+    function save() { try { localStorage.setItem('caf_tracker_v2', JSON.stringify(data)); } catch(e) {} }
+    function load() { 
+        try { 
+            const s = localStorage.getItem('caf_tracker_v2'); 
+            if(s) data = JSON.parse(s).map(i => ({mg: i.mg, d: new Date(i.d), label: i.label}));
+        } catch(e) {} 
+    }
+
+    function quick(mg, label) {
+        data.push({mg: mg, d: new Date(), label: label});
+        save(); update();
+    }
+    
+    function addManual() {
+        const mg = parseFloat(document.getElementById('custom-mg').value);
+        const t = document.getElementById('custom-time').value;
+        if(!mg || !t) return;
+        const [h, m] = t.split(':');
+        const d = new Date(); d.setHours(h, m, 0);
+        data.push({mg: mg, d: d, label: 'Perso'});
+        save(); update();
+    }
+
+    function undo() {
+        if(data.length > 0) {
+            data.pop();
+            save(); update();
+        }
+    }
+
+    function reset() { if(confirm("Vider l'historique ?")) { data = []; save(); update(); } }
+
+    function update() {
+        const now = new Date();
+        let total = 0;
+        const hist = document.getElementById('history');
+        hist.innerHTML = '';
+
+        // Tri pour afficher le plus récent en haut
+        const sortedData = [...data].sort((a, b) => b.d - a.d);
+
+        sortedData.forEach(i => {
+            let diff = (now - i.d) / 3600000;
+            if(diff < 0) diff = 0;
+            total += i.mg * Math.pow(0.5, diff / HL);
+            
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `<span><strong>${i.label}</strong> (${i.mg}mg)</span><span>à ${i.d.getHours()}h${i.d.getMinutes().toString().padStart(2,'0')}</span>`;
+            hist.appendChild(div);
+        });
+        document.getElementById('mg-value').innerText = total.toFixed(2);
+    }
+
+    // Heure par défaut
+    const setNowTime = () => {
+        document.getElementById('custom-time').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
+    };
+
+    load();
+    setNowTime();
+    update();
+    setInterval(update, 1000);
+</script>
+</body>
+</html>

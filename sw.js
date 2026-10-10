@@ -1,14 +1,17 @@
 // Service Worker - Suivi Caféine Pro
 // Version du cache
-const CACHE_NAME = 'cafeine-pro-v4';
+const CACHE_NAME = 'cafeine-pro-v5';
 
 // Ressources de l'App Shell et CDN externes
 const PRECACHE_ASSETS = [
   './',
   './index.html',
+  './widget.html',
   './manifest.json',
+  './icon.svg',
   './pwa-192x192.png',
   './pwa-512x512.png',
+  './pwa-maskable-512x512.png',
   './apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap'

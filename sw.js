@@ -1,27 +1,36 @@
-const CACHE_NAME = 'cafeine-pro-v3';
+// Service Worker - Suivi Caféine Pro
+// Version du cache
+const CACHE_NAME = 'cafeine-pro-v4';
+
+// Ressources de l'App Shell et CDN externes
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/widget.html',
-  '/manifest.json',
-  '/icon.svg',
-  '/pwa-192x192.png',
-  '/pwa-512x512.png',
-  '/pwa-maskable-512x512.png',
-  '/apple-touch-icon.png',
-  'https://cdn.jsdelivr.net/npm/chart.js'
+  './',
+  './index.html',
+  './manifest.json',
+  './pwa-192x192.png',
+  './pwa-512x512.png',
+  './apple-touch-icon.png',
+  'https://cdn.jsdelivr.net/npm/chart.js',
+  'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap'
 ];
 
+// Installation : Mise en cache de l'App Shell et des CDN
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS).catch((err) => {
-        console.warn('[SW] Precache fallback:', err);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      // Pré-mise en cache résiliente
+      for (const asset of PRECACHE_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn('[SW] Pré-cache avertissement pour ' + asset + ':', err);
+        }
+      }
     }).then(() => self.skipWaiting())
   );
 });
 
+// Activation : Nettoyage des anciens caches et prise de contrôle immédiate
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -36,41 +45,46 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Fetch : Stratégie "Cache First, fallback to Network" avec mise en cache dynamique
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
 
-  // Network-first for navigation requests
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match('/index.html') || caches.match('/'))
-    );
+  // Gérer les requêtes locales et les CDN autorisés (Google Fonts, Chart.js)
+  const isSameOrigin = url.origin === self.location.origin;
+  const isAllowedCdn = url.hostname.includes('googleapis.com') ||
+                       url.hostname.includes('gstatic.com') ||
+                       url.hostname.includes('jsdelivr.net');
+
+  if (!isSameOrigin && !isAllowedCdn) {
     return;
   }
 
-  // Cache-first for cached assets and CDN
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+    caches.match(event.request).then((cachedResponse) => {
+      // 1. Si présent en cache, renvoyer immédiatement (Cache First)
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-      return fetch(event.request).then((response) => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+      // 2. Sinon, requête réseau (fallback to Network)
+      return fetch(event.request).then((networkResponse) => {
+        // Enregistrer la nouvelle ressource en cache si valide
+        if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        return response;
-      }).catch(() => {
-        // Silent offline fallback
+        return networkResponse;
+      }).catch(async (fetchError) => {
+        // 3. Si hors-ligne et navigation de page, fallback sur index.html
+        if (event.request.mode === 'navigate') {
+          const fallback = await caches.match('./index.html') || await caches.match('./');
+          if (fallback) return fallback;
+        }
+        throw fetchError;
       });
     })
   );

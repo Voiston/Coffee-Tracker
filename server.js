@@ -11,6 +11,10 @@ const HOST = '0.0.0.0';
 
 app.use(express.static(__dirname));
 
+app.get('/widget', (req, res) => {
+  res.sendFile(path.join(__dirname, 'widget.html'));
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

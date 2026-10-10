@@ -1,0 +1,7 @@
+{
+  "name": "Suivi Caféine Pro",
+  "description": "Suivi et prédiction du taux de caféine métabolisé en temps réel avec profil métabolique personnalisé.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

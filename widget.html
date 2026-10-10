@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Widget Caféine Express</title>
+    <meta name="theme-color" content="#0B101B">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0B101B;
+            --surface: #121929;
+            --surface-card: #151F33;
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --accent: #E5B842;
+            --accent-glow: rgba(229, 184, 66, 0.35);
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --radius-md: 16px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        .widget-frame {
+            width: 100%;
+            max-width: 360px;
+            background: linear-gradient(180deg, rgba(21, 31, 51, 0.95) 0%, rgba(13, 20, 36, 0.98) 100%);
+            border: 1px solid rgba(229, 184, 66, 0.25);
+            border-radius: 24px;
+            padding: 18px 16px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(229, 184, 66, 0.1);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .widget-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-badge-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(229, 184, 66, 0.15);
+            border: 1px solid rgba(229, 184, 66, 0.35);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .widget-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: 0.2px;
+        }
+
+        .widget-sub {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .widget-open-app-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 5px 9px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .widget-open-app-btn:hover {
+            color: #FFFFFF;
+            border-color: rgba(229, 184, 66, 0.4);
+        }
+
+        /* Cadran compact */
+        .widget-metric-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .metric-col-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .metric-num-row {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-top: 2px;
+        }
+
+        .metric-num {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+        }
+
+        .metric-unit {
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        .metric-col-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .bedtime-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+
+        .bedtime-val {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        .adeno-tag {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        /* Grille des boutons 1-tap */
+        .widget-section-lbl {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--accent);
+            font-weight: 800;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .widget-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-widget-tap {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: var(--radius-sm);
+            padding: 12px 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #FFFFFF;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-widget-tap:active {
+            transform: scale(0.96);
+            background: rgba(229, 184, 66, 0.2);
+            border-color: var(--accent);
+        }
+
+        .widget-tap-emoji {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .widget-tap-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .widget-tap-name {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .widget-tap-dose {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 2px;
+        }
+
+        /* Banner feedback instantané */
+        .widget-toast {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--success);
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .undo-btn {
+            background: transparent;
+            border: 1px solid var(--success);
+            color: var(--success);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="widget-frame">
+    <div class="widget-header">
+        <div class="widget-brand">
+            <div class="widget-badge-icon">⚡</div>
+            <div>
+                <span class="widget-title">Widget Café</span>
+                <span class="widget-sub">1 Tap Log & Taux réel</span>
+            </div>
+        </div>
+        <a href="/" class="widget-open-app-btn">
+            Appli
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+    </div>
+
+    <!-- Taux en temps réel -->
+    <div class="widget-metric-card">
+        <div class="metric-col-left">
+            <span class="metric-label">Caféine active</span>
+            <div class="metric-num-row">
+                <span class="metric-num" id="w-mg">0.0</span>
+                <span class="metric-unit">mg</span>
+            </div>
+        </div>
+        <div class="metric-col-right">
+            <span class="bedtime-tag">Au coucher</span>
+            <span class="bedtime-val" id="w-bedtime">0 mg</span>
+            <span class="adeno-tag" id="w-adeno">0% adénosine</span>
+        </div>
+    </div>
+
+    <div class="widget-section-lbl">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Ajout rapide (1 clic)
+    </div>
+
+    <!-- Grille des 4 cafés les plus fréquents -->
+    <div class="widget-grid">
+        <button class="btn-widget-tap" onclick="logCoffee(70, 'Espresso', '☕')">
+            <div class="widget-tap-emoji">☕</div>
+            <div class="widget-tap-info">
+                <span class="widget-tap-name">Espresso</span>
+                <span class="widget-tap-dose">70 mg</span>
+            </div>
+        </button>
+
+        <button class="btn-widget-tap" onclick="logCoffee(140, 'Double', '☕☕')">
+            <div class="widget-tap-emoji">☕☕</div>
+            <div class="widget-tap-info">
+                <span class="widget-tap-name">Double</span>
+                <span class="widget-tap-dose">140 mg</span>
+            </div>
+        </button>
+
+        <button class="btn-widget-tap" onclick="logCoffee(160, 'Monster', '⚡')">
+            <div class="widget-tap-emoji">⚡</div>
+            <div class="widget-tap-info">
+                <span class="widget-tap-name">Monster</span>
+                <span class="widget-tap-dose">160 mg</span>
+            </div>
+        </button>
+
+        <button class="btn-widget-tap" onclick="logCoffee(120, 'Filtre', '🍵')">
+            <div class="widget-tap-emoji">🍵</div>
+            <div class="widget-tap-info">
+                <span class="widget-tap-name">Filtre</span>
+                <span class="widget-tap-dose">120 mg</span>
+            </div>
+        </button>
+    </div>
+
+    <!-- Feedback toast -->
+    <div class="widget-toast" id="w-toast">
+        <span id="w-toast-msg">☕ Espresso ajouté !</span>
+        <button class="undo-btn" onclick="undoCoffee()">Annuler</button>
+    </div>
+</div>
+
+<script>
+    let entries = JSON.parse(localStorage.getItem('caf_v10') || '[]');
+    let hl = parseFloat(localStorage.getItem('caf_hl_v10') || '5');
+    let bedtimeStr = localStorage.getItem('caf_bedtime') || '23:00';
+    let lastAddedIdx = null;
+    let toastTimeout = null;
+
+    function calc(targetTime) {
+        const ka = 3.5;
+        const ke = Math.LN2 / hl;
+        const tMax = Math.log(ka / ke) / (ka - ke);
+        const normFactor = Math.exp(-ke * tMax) - Math.exp(-ka * tMax);
+
+        return entries.reduce((acc, i) => {
+            const entryTime = new Date(i.d);
+            const deltaH = (targetTime - entryTime) / 3600000;
+            if (deltaH <= 0) return acc;
+            const curve = (Math.exp(-ke * deltaH) - Math.exp(-ka * deltaH)) / normFactor;
+            return acc + (i.mg * Math.max(0, curve));
+        }, 0);
+    }
+
+    function refresh() {
+        const now = new Date();
+        const cur = calc(now);
+        document.getElementById('w-mg').innerText = cur.toFixed(1);
+
+        const [bedH, bedM] = bedtimeStr.split(':').map(Number);
+        const tonight = new Date();
+        tonight.setHours(bedH, bedM, 0, 0);
+        if (tonight <= now && now.getHours() >= bedH) tonight.setDate(tonight.getDate() + 1);
+
+        const bedCur = calc(tonight);
+        const bedEl = document.getElementById('w-bedtime');
+        bedEl.innerText = `${bedCur.toFixed(0)} mg`;
+        if (bedCur <= 50) {
+            bedEl.style.color = "var(--success)";
+        } else {
+            bedEl.style.color = "var(--danger)";
+        }
+
+        const adenoPct = cur > 0 ? Math.min(99, Math.round((cur / (cur + 25)) * 100)) : 0;
+        document.getElementById('w-adeno').innerText = `${adenoPct}% adénosine`;
+    }
+
+    function logCoffee(mg, lbl, emoji) {
+        const now = new Date();
+        entries.push({ mg, lbl, d: now.toISOString() });
+        lastAddedIdx = entries.length - 1;
+        localStorage.setItem('caf_v10', JSON.stringify(entries));
+        
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate([20, 40]); } catch(e) {}
+        }
+
+        refresh();
+
+        const toast = document.getElementById('w-toast');
+        const msg = document.getElementById('w-toast-msg');
+        msg.innerText = `${emoji} ${lbl} (${mg} mg) enregistré !`;
+        toast.style.display = 'flex';
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.style.display = 'none';
+        }, 4000);
+    }
+
+    function undoCoffee() {
+        if (lastAddedIdx !== null && entries[lastAddedIdx]) {
+            entries.splice(lastAddedIdx, 1);
+            lastAddedIdx = null;
+            localStorage.setItem('caf_v10', JSON.stringify(entries));
+            refresh();
+            document.getElementById('w-toast').style.display = 'none';
+        }
+    }
+
+    refresh();
+    setInterval(refresh, 15000);
+</script>
+</body>
+</html>

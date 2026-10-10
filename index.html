@@ -8,321 +8,3271 @@
     <meta property="og:title" content="Suivi Caféine Pro">
     <meta property="og:description" content="Suivi et prédiction du taux de caféine métabolisé en temps réel avec profil métabolique personnalisé.">
     
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#070A12">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CaféinePro">
+
+    <!-- Fonts & Chart.js -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap');
-
         :root {
-            --bg: #0B101B; /* Bleu Anthracite */
-            --surface: #151C2C;
-            --accent: #D4AF37; /* Or / Bronze doux */
-            --text: #FFFFFF;
-            --text-dim: #707A8C;
-            --radius: 12px;
+            --bg: #070A12;
+            --surface: #0E1424;
+            --surface-elevated: #151D33;
+            --surface-card: rgba(14, 20, 36, 0.88);
+            --surface-border: rgba(255, 255, 255, 0.07);
+            --surface-border-subtle: rgba(255, 255, 255, 0.04);
+            
+            --accent: #E5B842;
+            --accent-glow: rgba(229, 184, 66, 0.32);
+            --accent-light: #FDE8A5;
+            --accent-subtle: rgba(229, 184, 66, 0.12);
+            
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            
+            --success: #10B981;
+            --success-glow: rgba(16, 185, 129, 0.25);
+            --warning: #F59E0B;
+            --warning-glow: rgba(245, 158, 11, 0.25);
+            --danger: #EF4444;
+            --danger-glow: rgba(239, 68, 68, 0.25);
+            
+            --radius-xl: 20px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            
+            --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Montserrat', sans-serif;
+            font-family: var(--font-main);
             background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(ellipse 90% 45% at 50% -10%, rgba(229, 184, 66, 0.14) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 85% 60%, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 15% 80%, rgba(59, 130, 246, 0.03) 0%, transparent 60%);
+            background-attachment: fixed;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* --- HEADER --- */
-        .hero {
+        /* --- APP WRAPPER (MOBILE-FIRST) --- */
+        .app-shell {
             width: 100%;
-            padding: 80px 20px 50px;
-            background: radial-gradient(circle at center, #1C2538 0%, #0B101B 100%);
-            text-align: center;
+            max-width: 480px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 110px;
             position: relative;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .settings-btn {
-            position: absolute; top: 50px; right: 25px;
-            color: var(--text-dim); font-size: 0.9rem; font-weight: 700;
+        /* --- TOP APP BAR --- */
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px 10px;
+            z-index: 20;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            background: rgba(7, 10, 18, 0.75);
+            border-bottom: 1px solid var(--surface-border-subtle);
         }
 
-        .label-main {
-            font-size: 0.75rem;
-            letter-spacing: 2px;
+        .brand-cluster {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon-box {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(229, 184, 66, 0.2), rgba(229, 184, 66, 0.05));
+            border: 1px solid rgba(229, 184, 66, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(229, 184, 66, 0.15);
+        }
+
+        .brand-text-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: -0.2px;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .brand-sub {
+            font-size: 0.68rem;
             color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-top-action {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            height: 34px;
+            padding: 0 11px;
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
             font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            font-family: inherit;
+        }
+
+        .btn-top-action:hover {
+            color: var(--text-primary);
+            border-color: rgba(229, 184, 66, 0.3);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .btn-pwa-install {
+            background: linear-gradient(135deg, var(--accent), #D4AF37);
+            color: #000;
+            border: none;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            box-shadow: 0 4px 14px rgba(229, 184, 66, 0.35);
+        }
+
+        .btn-pwa-install:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(229, 184, 66, 0.45);
+        }
+
+        /* --- HERO BIOMETRIC DISPLAY --- */
+        .hero-section {
+            padding: 16px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-halo {
+            position: absolute;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            filter: blur(65px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+            animation: haloPulse var(--pulse-speed, 3.6s) infinite ease-in-out;
+            transition: opacity 0.3s ease;
+        }
+
+        @keyframes haloPulse {
+            0% { opacity: 0.10; transform: translate(-50%, -50%) scale(0.94); }
+            50% { opacity: 0.28; transform: translate(-50%, -50%) scale(1.08); }
+            100% { opacity: 0.10; transform: translate(-50%, -50%) scale(0.94); }
+        }
+
+        .hero-halo.flash {
+            animation: haloFlashBurst 0.85s ease-out forwards !important;
+        }
+
+        @keyframes haloFlashBurst {
+            0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.4; filter: blur(35px); background: #FFF4C2; }
+            40% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.9; filter: blur(30px); background: #FFE485; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.15; filter: blur(65px); background: var(--accent); }
+        }
+
+        .dial-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .dial-center-box {
+            position: absolute;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .dial-kicker {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--accent);
+            opacity: 0.9;
+            margin-bottom: 2px;
+        }
+
+        .dial-number-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+
+        .dial-number {
+            font-size: 3.8rem;
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+            color: #FFFFFF;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .dial-unit {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-left: 3px;
+        }
+
+        .dial-status-chip {
+            margin-top: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            backdrop-filter: blur(8px);
+            transition: all 0.25s ease;
+        }
+
+        /* --- BIO-TILES (3 VITAL CARDS) --- */
+        .bio-tiles-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 14px;
+            z-index: 2;
+        }
+
+        .bio-tile {
+            background: var(--surface-card);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 10px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+        }
+
+        .bio-tile-label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+        }
+
+        .bio-tile-value {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            line-height: 1.2;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .bio-tile-sub {
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- RAPID 1-TAP ACTION STRIP (GAME CHANGER UX) --- */
+        .quick-strip-card {
+            width: 100%;
+            margin-top: 14px;
+            background: rgba(21, 29, 51, 0.55);
+            border: 1px solid rgba(229, 184, 66, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 12px 14px;
+            z-index: 2;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .quick-strip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .quick-strip-title {
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quick-strip-hint {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .quick-buttons-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .btn-quick-tap {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            cursor: pointer;
+            transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #FFFFFF;
+            font-family: inherit;
+        }
+
+        .btn-quick-tap:hover {
+            background: rgba(229, 184, 66, 0.12);
+            border-color: rgba(229, 184, 66, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-quick-tap:active {
+            transform: scale(0.95);
+            background: rgba(229, 184, 66, 0.22);
+        }
+
+        .quick-tap-emoji {
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+
+        .quick-tap-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .quick-tap-mg {
+            font-size: 0.62rem;
+            font-weight: 700;
+            color: var(--accent);
             opacity: 0.9;
         }
 
-        /* --- EFFET PULSE ECLIPSE --- */
-        #mg-display {
-            font-size: 5.5rem;
-            font-weight: 900;
+        /* --- SEGMENTED NAVIGATION TABS --- */
+        .nav-tabs-wrapper {
+            padding: 0 20px;
+            margin-top: 4px;
+            margin-bottom: 16px;
+        }
+
+        .segmented-nav {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: inherit;
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-btn.active {
+            background: var(--surface-elevated);
+            color: var(--accent);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(229, 184, 66, 0.25);
+        }
+
+        /* --- TAB CONTENT CONTAINER --- */
+        .tab-content {
+            padding: 0 20px;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeInTab 0.22s ease-out;
+        }
+
+        .tab-pane.active {
             display: block;
-            margin: 10px 0;
-            color: var(--text);
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- CARDS --- */
+        .app-card {
+            background: var(--surface-card);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--surface-border);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(12px);
+            position: relative;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .card-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.1px;
+        }
+
+        .card-subtitle {
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .card-badge-clean {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* --- TIMELINE DE COUPURE (SMART CUTOFF) --- */
+        .cutoff-grid-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .btn-cutoff-option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            padding: 8px 6px;
+            border-radius: 9px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .btn-cutoff-option:hover {
+            color: #FFFFFF;
+            border-color: rgba(229, 184, 66, 0.3);
+        }
+
+        .btn-cutoff-option.active {
+            background: rgba(229, 184, 66, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 10px rgba(229, 184, 66, 0.15);
+        }
+
+        .cutoff-display-center {
+            text-align: center;
+            padding: 6px 0 12px;
+        }
+
+        .cutoff-clock-hero {
+            font-size: 3.4rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+            color: #FFFFFF;
+        }
+
+        .cutoff-countdown-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+        }
+
+        /* Timeline bar representation */
+        .timeline-track-wrap {
+            margin: 16px 10px 10px;
+            position: relative;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            right: 20px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .timeline-nodes {
+            display: flex;
+            justify-content: space-between;
             position: relative;
             z-index: 2;
         }
 
-        .pulse-circle {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 180px; height: 180px;
-            background: var(--accent);
+        .timeline-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timeline-dot {
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.1;
-            z-index: 1;
-            animation: pulse-aura var(--pulse-speed, 3s) infinite ease-in-out;
+            background: var(--surface-elevated);
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 800;
         }
 
-        @keyframes pulse-aura {
-            0% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
-            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.1); }
-            100% { opacity: 0.05; transform: translate(-50%, -50%) scale(0.9); }
+        .timeline-dot.node-now {
+            border-color: #3B82F6;
+            background: rgba(59, 130, 246, 0.25);
+            color: #60A5FA;
         }
 
-        .status-badge {
-            display: inline-flex;
-            padding: 10px 24px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-top: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .timeline-dot.node-cutoff {
+            border-color: var(--accent);
+            background: rgba(229, 184, 66, 0.25);
+            color: var(--accent);
         }
 
-        /* --- CONTENU --- */
-        .container { width: 92%; max-width: 420px; margin-top: 25px; padding-bottom: 140px; }
-
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .timeline-dot.node-bed {
+            border-color: #8B5CF6;
+            background: rgba(139, 92, 246, 0.25);
+            color: #A78BFA;
         }
 
-        .card-title {
+        .timeline-label {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .cutoff-explanation {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            margin-top: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--surface-border-subtle);
+        }
+
+        /* --- CHART & SIMULATOR --- */
+        .chart-wrap {
+            position: relative;
+            height: 200px;
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .chart-meta-row {
+            display: flex;
+            justify-content: space-between;
             font-size: 0.7rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--surface-border-subtle);
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+
+        .chart-legend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-bullet {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Simulator strip */
+        .sim-strip {
+            margin-top: 12px;
+            padding: 10px 12px;
+            background: rgba(229, 184, 66, 0.05);
+            border: 1px dashed rgba(229, 184, 66, 0.3);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sim-title {
+            font-size: 0.72rem;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sim-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .btn-sim-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 6px 2px;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .btn-sim-pill.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: 800;
+        }
+
+        /* --- HISTORY LIST --- */
+        .history-list-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--surface-border-subtle);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .history-text-col strong {
+            font-size: 0.85rem;
+            color: #FFFFFF;
             display: block;
         }
 
-        /* --- BOUTONS --- */
-        .btn-main {
-            position: fixed; bottom: 30px;
-            width: 85%; max-width: 380px;
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 20px;
-            font-size: 1rem;
-            font-weight: 900;
+        .history-text-col span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 1px;
+            display: block;
+        }
+
+        .btn-delete-entry {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            font-family: inherit;
+        }
+
+        .btn-delete-entry:hover {
+            color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 24px 0;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        /* --- WEEKLY STATS TAB --- */
+        .weekly-hero-stat {
+            text-align: center;
+            padding: 8px 0 14px;
+        }
+
+        .weekly-hero-num {
+            font-size: 3.4rem;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1;
+            color: #FFFFFF;
+        }
+
+        .weekly-hero-unit {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-left: 4px;
+        }
+
+        .weekly-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .weekly-kpi-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border-subtle);
+            border-radius: var(--radius-md);
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .weekly-kpi-label {
+            font-size: 0.62rem;
             text-transform: uppercase;
-            border-radius: var(--radius);
-            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .weekly-kpi-val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            margin-top: 3px;
+        }
+
+        .bev-progress-item {
+            margin-bottom: 12px;
+        }
+
+        .bev-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .bev-progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bev-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        /* --- SCIENCE & GUIDE TAB --- */
+        .science-card {
+            border-left: 3px solid var(--accent);
+        }
+
+        .science-text {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            margin-top: 6px;
+        }
+
+        .science-highlight {
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+
+        /* --- FLOATING MAIN ACTION BUTTON --- */
+        .fab-container {
+            position: fixed;
+            bottom: 24px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
             z-index: 100;
+            pointer-events: none;
+            padding: 0 20px;
         }
 
-        /* --- HISTORIQUE --- */
-        .log-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+        .btn-fab {
+            pointer-events: auto;
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(135deg, var(--accent) 0%, #D4AF37 100%);
+            color: #070A12;
+            border: none;
+            padding: 16px 24px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(229, 184, 66, 0.35);
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: inherit;
         }
-        .log-info strong { font-size: 1rem; color: var(--text); }
-        .log-info div { font-size: 0.75rem; color: var(--text-dim); margin-top: 3px; }
-        .del-btn { color: #5C667A; font-weight: 700; padding: 10px; }
 
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(11, 16, 27, 0.95); display: none;
-            justify-content: center; align-items: center; z-index: 200;
+        .btn-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(229, 184, 66, 0.45);
         }
-        .modal {
-            background: var(--surface); width: 85%; padding: 30px;
-            border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.1);
+
+        .btn-fab:active {
+            transform: scale(0.98);
         }
-        .grid-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .btn-choice {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            padding: 15px; border-radius: 8px; font-weight: 700;
+
+        /* --- BOTTOM SHEETS --- */
+        .sheet-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(7, 10, 18, 0.82);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 200;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.26s ease;
         }
-        .btn-choice.active { background: var(--accent); color: #000; }
-        
-        input {
-            background: #080C14; border: 1px solid rgba(255,255,255,0.1); color: #fff;
-            padding: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box;
-            border-radius: 8px; font-size: 1rem;
+
+        .sheet-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .bottom-sheet {
+            background: var(--surface);
+            width: 100%;
+            max-width: 480px;
+            padding: 14px 20px 32px;
+            border-radius: 24px 24px 0 0;
+            border: 1px solid var(--surface-border);
+            border-bottom: none;
+            box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+            transform: translateY(100%);
+            transition: transform 0.30s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .sheet-backdrop.active .bottom-sheet {
+            transform: translateY(0);
+        }
+
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin: 0 auto 14px;
+        }
+
+        .sheet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .sheet-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .sheet-close-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.16s ease;
+        }
+
+        .sheet-close-btn:hover {
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* --- PRESETS GRID (6 BOISSONS) --- */
+        .sheet-grid-6 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .sheet-preset-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            color: #FFFFFF;
+            padding: 10px 8px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.16s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-family: inherit;
+        }
+
+        .sheet-preset-btn:hover {
+            border-color: rgba(229, 184, 66, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sheet-preset-btn.active {
+            background: rgba(229, 184, 66, 0.16);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(229, 184, 66, 0.2);
+        }
+
+        .preset-icon {
+            font-size: 1.25rem;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .preset-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+
+        .preset-mg {
+            font-size: 0.65rem;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Form elements */
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input-number, .form-input-text, .form-input-time {
+            width: 100%;
+            background: #090E1A;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: #FFFFFF;
+            font-size: 0.95rem;
+            font-weight: 700;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input-number:focus, .form-input-text:focus, .form-input-time:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(229, 184, 66, 0.2);
+        }
+
+        /* --- ANDROID CLOCK COMPONENT (MATERIAL ALARM CLOCK) --- */
+        .android-clock-card {
+            background: #080D18;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-lg);
+            padding: 16px 14px 14px;
+            margin-bottom: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .android-time-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .time-digit-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            padding: 8px 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .time-digit-box.active {
+            background: rgba(229, 184, 66, 0.15);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(229, 184, 66, 0.25);
+        }
+
+        .digit-val {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .digit-lbl {
+            font-size: 0.58rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 1px;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .time-separator {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .clock-dial-wrapper {
+            width: 220px;
+            height: 220px;
+            position: relative;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .clock-quick-chips {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-clock-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 6px 9px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-clock-chip:hover {
+            color: #FFFFFF;
+            border-color: rgba(229, 184, 66, 0.35);
+        }
+
+        .btn-clock-chip.highlight {
+            background: rgba(229, 184, 66, 0.15);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-sheet-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent) 0%, #D4AF37 100%);
+            color: #070A12;
+            border: none;
+            padding: 16px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(229, 184, 66, 0.3);
+            transition: all 0.16s ease;
+            font-family: inherit;
+        }
+
+        .btn-sheet-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* --- SETTINGS SHEET --- */
+        .slider-box {
+            background: #090E1A;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .slider-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .slider-unit-lbl {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin: 4px 0 12px;
+            display: block;
+        }
+
+        .hl-range-input {
+            width: 100%;
+            height: 6px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .profile-presets-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .btn-profile-preset {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 8px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .btn-profile-preset:hover {
+            color: #FFFFFF;
+            border-color: rgba(229, 184, 66, 0.4);
+        }
+
+        .btn-profile-preset.active {
+            background: rgba(229, 184, 66, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .data-backup-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .btn-action-outline {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border);
+            color: var(--text-secondary);
+            padding: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-action-outline:hover {
+            color: #FFFFFF;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-danger-full {
+            width: 100%;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: var(--danger);
+            padding: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.15s ease;
+            font-family: inherit;
+        }
+
+        .btn-danger-full:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        /* --- TOAST NOTIFICATION WITH UNDO --- */
+        .toast-snack {
+            position: fixed;
+            bottom: 84px;
+            left: 50%;
+            transform: translateX(-50%) translateY(30px);
+            opacity: 0;
+            background: #1A243D;
+            border: 1px solid rgba(229, 184, 66, 0.35);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 300;
+            pointer-events: none;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+            max-width: 90%;
+        }
+
+        .toast-snack.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast-text {
+            font-size: 0.78rem;
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .toast-undo-btn {
+            background: rgba(229, 184, 66, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 4px 10px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
         }
     </style>
 </head>
 <body>
 
-    <div class="hero">
-        <div class="pulse-circle" id="pulse"></div>
-        <div class="settings-btn" onclick="openModal('modal-settings')">RÉGLAGES</div>
-        <span class="label-main">Taux de caféine actuel</span>
-        <span id="mg-display">0.00</span>
-        <div class="status-badge" id="sleep-badge">
-            <span id="sleep-txt">Analyse en cours...</span>
-        </div>
-    </div>
+<div class="app-shell">
 
-    <div class="container">
-        <div class="card">
-            <span class="card-title">Évolution sur 12 heures</span>
-            <canvas id="mainChart"></canvas>
-        </div>
-
-        <div class="card">
-            <span class="card-title">Historique des prises</span>
-            <div id="history-list"></div>
-        </div>
-    </div>
-
-    <button class="btn-main" onclick="openModal('modal-add')">Ajouter un café +</button>
-
-    <div class="modal-overlay" id="modal-add" onclick="closeModals()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <span class="card-title">Nouvelle dose</span>
-            <div class="grid-choices">
-                <button class="btn-choice" id="p-7" onclick="setPreset(70, 'Espresso F7', 'p-7')">F7 (70mg)</button>
-                <button class="btn-choice" id="p-d" onclick="setPreset(3, 'Déca', 'p-d')">Déca (3mg)</button>
+    <!-- TOP BRAND BAR -->
+    <header class="top-bar">
+        <div class="brand-cluster">
+            <div class="brand-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E5B842" stroke-width="2.4">
+                    <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+                    <line x1="6" y1="1" x2="6" y2="4"/>
+                    <line x1="10" y1="1" x2="10" y2="4"/>
+                    <line x1="14" y1="1" x2="14" y2="4"/>
+                </svg>
             </div>
-            <input type="number" id="in-mg" placeholder="Dose personnalisée (mg)">
-            <input type="time" id="in-t">
-            <button class="btn-main" style="position:static; width:100%; margin-top:20px;" onclick="saveEntry()">Enregistrer</button>
+            <div class="brand-text-col">
+                <span class="brand-name">Suivi Caféine Pro</span>
+                <span class="brand-sub">Biométrie & Sommeil</span>
+            </div>
+        </div>
+        <div class="top-actions">
+            <button class="btn-top-action" onclick="openSheet('sheet-widget-guide')" title="Widget écran d'accueil">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                WIDGET
+            </button>
+            <button class="btn-top-action btn-pwa-install" id="btn-pwa-install" onclick="handleInstallClick()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                INSTALLER
+            </button>
+            <button class="btn-top-action" onclick="openSheet('sheet-settings')" aria-label="Paramètres">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO BIOMETRIC DISPLAY -->
+    <section class="hero-section">
+        <div class="hero-halo" id="pulse"></div>
+
+        <div class="dial-container">
+            <svg viewBox="0 0 240 240" width="240" height="240">
+                <!-- Background track arc -->
+                <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="100" stroke-linecap="round" transform="rotate(127.5 120 120)" />
+                <!-- 50mg threshold indicator on dial -->
+                <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(16, 185, 129, 0.55)" stroke-width="10" stroke-dasharray="6 500" stroke-dashoffset="14" stroke-linecap="round" transform="rotate(185 120 120)" />
+                <!-- Active glowing progress arc -->
+                <circle id="gauge-arc" cx="120" cy="120" r="102" fill="none" stroke="url(#accent-gold-gradient)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="480" stroke-linecap="round" transform="rotate(127.5 120 120)" style="transition: stroke-dashoffset 0.55s cubic-bezier(0.16, 1, 0.3, 1);" />
+                
+                <defs>
+                    <linearGradient id="accent-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFF3C4" />
+                        <stop offset="60%" stop-color="#E5B842" />
+                        <stop offset="100%" stop-color="#D4AF37" />
+                    </linearGradient>
+                </defs>
+            </svg>
+
+            <div class="dial-center-box">
+                <span class="dial-kicker">Taux systémique</span>
+                <div class="dial-number-row">
+                    <span class="dial-number" id="mg-display">0.0</span>
+                    <span class="dial-unit">mg</span>
+                </div>
+                <div class="dial-status-chip" id="kinetic-status-chip">
+                    <span id="kinetic-txt">● Au repos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3 VITAL BIO-TILES -->
+        <div class="bio-tiles-grid">
+            <div class="bio-tile">
+                <span class="bio-tile-label" id="bedtime-subtile-lbl">Au coucher (23h)</span>
+                <span class="bio-tile-value" id="bedtime-subtile-val">
+                    <span id="bedtime-dot">🟢</span> <span id="bedtime-val-txt">0 mg</span>
+                </span>
+                <span class="bio-tile-sub" id="bedtime-desc">Idéal pour le sommeil</span>
+            </div>
+
+            <div class="bio-tile">
+                <span class="bio-tile-label">Adénosine bloquée</span>
+                <span class="bio-tile-value">
+                    <span id="adenosine-pct">0%</span>
+                </span>
+                <span class="bio-tile-sub" id="adenosine-desc">Récepteurs A1/A2A</span>
+            </div>
+
+            <div class="bio-tile">
+                <span class="bio-tile-label">Sous 50 mg</span>
+                <span class="bio-tile-value" id="threshold-subtile-val">
+                    <span id="threshold-val-txt">Déjà serein</span>
+                </span>
+                <span class="bio-tile-sub">Seuil sommeil profond</span>
+            </div>
+        </div>
+
+        <!-- INSTANT 1-TAP QUICK LOG BAR (REVOLUTIONARY SPEED) -->
+        <div class="quick-strip-card">
+            <div class="quick-strip-header">
+                <span class="quick-strip-title">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Ajout Éclair en 1 Tap (Maintenant)
+                </span>
+                <span class="quick-strip-hint">Enregistrement instantané</span>
+            </div>
+            <div class="quick-buttons-row">
+                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕')">
+                    <span class="quick-tap-emoji">☕</span>
+                    <span class="quick-tap-label">Espresso</span>
+                    <span class="quick-tap-mg">70 mg</span>
+                </button>
+                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕')">
+                    <span class="quick-tap-emoji">☕☕</span>
+                    <span class="quick-tap-label">Double</span>
+                    <span class="quick-tap-mg">140 mg</span>
+                </button>
+                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡')">
+                    <span class="quick-tap-emoji">⚡</span>
+                    <span class="quick-tap-label">Monster</span>
+                    <span class="quick-tap-mg">160 mg</span>
+                </button>
+                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵')">
+                    <span class="quick-tap-emoji">🍵</span>
+                    <span class="quick-tap-label">Filtre</span>
+                    <span class="quick-tap-mg">120 mg</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- NAVIGATION TABS -->
+    <div class="nav-tabs-wrapper">
+        <nav class="segmented-nav">
+            <button class="nav-btn active" id="tab-btn-today" onclick="switchMainTab('today')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Aujourd'hui
+            </button>
+            <button class="nav-btn" id="tab-btn-stats" onclick="switchMainTab('stats')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Analyse 7j
+            </button>
+            <button class="nav-btn" id="tab-btn-science" onclick="switchMainTab('science')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                Guide & Science
+            </button>
+        </nav>
+    </div>
+
+    <!-- MAIN TAB CONTENTS -->
+    <main class="tab-content">
+
+        <!-- TAB 1 : AUJOURD'HUI -->
+        <div class="tab-pane active" id="pane-today">
+            
+            <!-- SMART CUTOFF (HEURE LIMITE DU DERNIER CAFÉ) -->
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Heure limite du dernier café</span>
+                        <span class="card-subtitle">Pour préserver votre nuit selon votre profil</span>
+                    </div>
+                    <span class="card-badge-clean" id="cutoff-drink-tag">Espresso (70 mg)</span>
+                </div>
+
+                <!-- SELECTION RAPIDE DE LA BOISSON CIBLE -->
+                <div class="cutoff-grid-options">
+                    <button type="button" class="btn-cutoff-option active" id="cutoff-btn-70" onclick="setCutoffCandidate(70, 'Espresso (70 mg)', 'cutoff-btn-70')">☕ 70mg</button>
+                    <button type="button" class="btn-cutoff-option" id="cutoff-btn-140" onclick="setCutoffCandidate(140, 'Double (140 mg)', 'cutoff-btn-140')">☕☕ 140mg</button>
+                    <button type="button" class="btn-cutoff-option" id="cutoff-btn-160" onclick="setCutoffCandidate(160, 'Monster (160 mg)', 'cutoff-btn-160')">⚡ 160mg</button>
+                    <button type="button" class="btn-cutoff-option" id="cutoff-btn-120" onclick="setCutoffCandidate(120, 'Filtre (120 mg)', 'cutoff-btn-120')">🍵 120mg</button>
+                    <button type="button" class="btn-cutoff-option" id="cutoff-btn-45" onclick="setCutoffCandidate(45, 'Thé (45 mg)', 'cutoff-btn-45')">🌿 45mg</button>
+                    <button type="button" class="btn-cutoff-option" id="cutoff-btn-3" onclick="setCutoffCandidate(3, 'Déca (3 mg)', 'cutoff-btn-3')">🌾 Déca</button>
+                </div>
+
+                <div class="cutoff-display-center">
+                    <div class="cutoff-clock-hero" id="cutoff-time-display">--:--</div>
+                    <div>
+                        <div class="cutoff-countdown-badge" id="cutoff-status-badge">
+                            <span id="cutoff-status-txt">Calcul de la fenêtre optimale...</span>
+                        </div>
+                    </div>
+
+                    <!-- VISUAL 3-POINT TIMELINE TRACK -->
+                    <div class="timeline-track-wrap">
+                        <div class="timeline-line"></div>
+                        <div class="timeline-nodes">
+                            <div class="timeline-node">
+                                <div class="timeline-dot node-now">●</div>
+                                <span class="timeline-label" id="tl-now-txt">Maintenant</span>
+                            </div>
+                            <div class="timeline-node">
+                                <div class="timeline-dot node-cutoff">☕</div>
+                                <span class="timeline-label" id="tl-cutoff-txt">Limite</span>
+                            </div>
+                            <div class="timeline-node">
+                                <div class="timeline-dot node-bed">💤</div>
+                                <span class="timeline-label" id="tl-bed-txt">Coucher</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="cutoff-explanation" id="cutoff-expl-txt">
+                        Calculé pour garantir un taux résiduel inférieur à 50 mg au coucher.
+                    </p>
+                </div>
+            </article>
+
+            <!-- COURBE PHARMACOCINÉTIQUE ET SIMULATEUR INTERACTIF -->
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Cinétique & Projection (16h)</span>
+                        <span class="card-subtitle">Modèle d'absorption Bateman & élimination</span>
+                    </div>
+                    <span class="card-badge-clean">Temps réel</span>
+                </div>
+
+                <div class="chart-wrap">
+                    <canvas id="mainChart"></canvas>
+                </div>
+
+                <div class="chart-meta-row">
+                    <div class="chart-legend-indicator">
+                        <span class="legend-bullet" style="background:#E5B842;"></span>
+                        <span>Taux actif</span>
+                    </div>
+                    <div class="chart-legend-indicator">
+                        <span class="legend-bullet" style="background:#10B981;"></span>
+                        <span>Seuil sommeil (50 mg)</span>
+                    </div>
+                    <div class="chart-legend-indicator" id="sim-legend" style="display:none;">
+                        <span class="legend-bullet" style="background:#F43F5E;"></span>
+                        <span>Simulation</span>
+                    </div>
+                </div>
+
+                <!-- SIMULATEUR "ET SI JE PRENAIS UN CAFÉ ?" -->
+                <div class="sim-strip">
+                    <div class="sim-header">
+                        <span class="sim-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            Simulateur prédictif : « Et si j'en buvais un maintenant ? »
+                        </span>
+                        <span style="font-size:0.68rem; color:var(--text-muted);" id="sim-impact-tag">Inactif</span>
+                    </div>
+                    <div class="sim-buttons-grid">
+                        <button type="button" class="btn-sim-pill active" id="sim-none" onclick="setSimulationDose(0, 'sim-none')">Aucun</button>
+                        <button type="button" class="btn-sim-pill" id="sim-70" onclick="setSimulationDose(70, 'sim-70')">+ Espresso</button>
+                        <button type="button" class="btn-sim-pill" id="sim-140" onclick="setSimulationDose(140, 'sim-140')">+ Double</button>
+                        <button type="button" class="btn-sim-pill" id="sim-160" onclick="setSimulationDose(160, 'sim-160')">+ Monster</button>
+                    </div>
+                </div>
+            </article>
+
+            <!-- HISTORIQUE DES PRISES -->
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Historique des prises</span>
+                        <span class="card-subtitle">Journal chronologique du jour</span>
+                    </div>
+                    <span class="card-badge-clean" id="entry-count-tag">0 prise</span>
+                </div>
+                <div class="history-list-box" id="history-list"></div>
+            </article>
+
+        </div>
+
+        <!-- TAB 2 : STATISTIQUES HEBDOMADAIRES -->
+        <div class="tab-pane" id="pane-stats">
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Moyenne quotidienne</span>
+                        <span class="card-subtitle">Sur les 7 derniers jours glissants</span>
+                    </div>
+                    <span class="card-badge-clean">Recommandation EFSA</span>
+                </div>
+
+                <div class="weekly-hero-stat">
+                    <div>
+                        <span class="weekly-hero-num" id="weekly-avg-display">0.0</span>
+                        <span class="weekly-hero-unit">mg / jour</span>
+                    </div>
+                    <div class="cutoff-countdown-badge" id="weekly-health-badge" style="margin-top: 10px;">
+                        <span id="weekly-health-txt">Analyse des 7 jours...</span>
+                    </div>
+                </div>
+
+                <div class="weekly-kpi-grid">
+                    <div class="weekly-kpi-card">
+                        <div class="weekly-kpi-label">Total 7 jours</div>
+                        <div class="weekly-kpi-val" id="weekly-total-display">0 mg</div>
+                    </div>
+                    <div class="weekly-kpi-card">
+                        <div class="weekly-kpi-label">Jour pic</div>
+                        <div class="weekly-kpi-val" id="weekly-peak-display">--</div>
+                    </div>
+                    <div class="weekly-kpi-card">
+                        <div class="weekly-kpi-label">Total cafés</div>
+                        <div class="weekly-kpi-val" id="weekly-count-display">0</div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Consommation par jour</span>
+                        <span class="card-subtitle">Ligne de repère santé : 400 mg/j</span>
+                    </div>
+                    <span class="card-badge-clean">7 jours</span>
+                </div>
+                <div style="position: relative; height: 180px; width: 100%;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </article>
+
+            <article class="app-card">
+                <div class="card-header-row">
+                    <div class="card-title-group">
+                        <span class="card-title">Répartition des boissons</span>
+                        <span class="card-subtitle">Doses cumulées cette semaine</span>
+                    </div>
+                    <span class="card-badge-clean" id="weekly-bev-count-tag">0 type</span>
+                </div>
+                <div id="weekly-bev-list"></div>
+            </article>
+        </div>
+
+        <!-- TAB 3 : GUIDE & SCIENCE -->
+        <div class="tab-pane" id="pane-science">
+            <article class="app-card science-card">
+                <div class="card-title-group">
+                    <span class="card-title">💤 Pourquoi le seuil critique de 50 mg au coucher ?</span>
+                </div>
+                <p class="science-text">
+                    La caféine est un <span class="science-highlight">antagoniste compétitif des récepteurs à l'adénosine (A1 et A2A)</span>. Même si vous parvenez à vous endormir avec plus de 50 mg de caféine résiduelle dans le corps, votre <span class="science-highlight">sommeil profond à ondes lentes (NREM 3)</span> est réduit de 20% à 40%, empêchant la restauration neuronale et causant la sensation de fatigue au réveil.
+                </p>
+            </article>
+
+            <article class="app-card science-card">
+                <div class="card-title-group">
+                    <span class="card-title">⏰ La règle d'or des 90 minutes au réveil</span>
+                </div>
+                <p class="science-text">
+                    Au réveil, votre corps produit un pic naturel de cortisol (Réponse du Cortisol au Réveil) pour nettoyer l'adénosine résiduelle de la nuit. Boire un café immédiatement bloque ce nettoyage naturel. En attendant <span class="science-highlight">90 minutes après le lever</span>, vous évitez le redoutable « crash de 14h » !
+                </p>
+            </article>
+
+            <article class="app-card science-card">
+                <div class="card-title-group">
+                    <span class="card-title">🧬 Demi-vie & Génétique (CYP1A2)</span>
+                </div>
+                <p class="science-text">
+                    95% de la caféine est dégradée par l'enzyme hépatique <span class="science-highlight">CYP1A2</span>. La demi-vie standard est de 5 heures, mais varie de 3h (métaboliseurs ultra-rapides, fumeurs) à plus de 7h (métaboliseurs lents, prise de contraceptifs oraux). Ajustez votre curseur dans les paramètres pour un calcul sur-mesure.
+                </p>
+            </article>
+
+            <article class="app-card science-card">
+                <div class="card-title-group">
+                    <span class="card-title">🛡️ Dose maximale de sécurité (EFSA)</span>
+                </div>
+                <p class="science-text">
+                    L'Autorité Européenne de Sécurité des Aliments (EFSA) recommande de ne pas dépasser <span class="science-highlight">400 mg par jour</span> pour un adulte sain (environ 5 espressos simples), et pas plus de <span class="science-highlight">200 mg en une seule prise</span>.
+                </p>
+            </article>
+        </div>
+
+    </main>
+
+    <!-- FLOATING MAIN ACTION BUTTON (FAB) -->
+    <div class="fab-container">
+        <button class="btn-fab" onclick="openSheet('sheet-add')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Nouvelle boisson (Heure & Dose)
+        </button>
+    </div>
+
+    <!-- BOTTOM SHEET : NOUVELLE BOISSON (AVEC HORLOGE ANDROID) -->
+    <div class="sheet-backdrop" id="sheet-add" onclick="closeSheets()">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <span class="sheet-title">Enregistrer une boisson</span>
+                <button class="sheet-close-btn" onclick="closeSheets()" aria-label="Fermer">✕</button>
+            </div>
+
+            <!-- PRESETS GRID (6 BOISSONS) -->
+            <div class="sheet-grid-6">
+                <button type="button" class="sheet-preset-btn active" id="p-f7" onclick="setPreset(70, 'Espresso F7', 'p-f7')">
+                    <span class="preset-icon">☕</span>
+                    <span class="preset-title">Espresso</span>
+                    <span class="preset-mg">70 mg</span>
+                </button>
+                <button type="button" class="sheet-preset-btn" id="p-double" onclick="setPreset(140, 'Double Espresso', 'p-double')">
+                    <span class="preset-icon">☕☕</span>
+                    <span class="preset-title">Double</span>
+                    <span class="preset-mg">140 mg</span>
+                </button>
+                <button type="button" class="sheet-preset-btn" id="p-monster" onclick="setPreset(160, 'Monster 500ml', 'p-monster')">
+                    <span class="preset-icon">⚡</span>
+                    <span class="preset-title">Monster</span>
+                    <span class="preset-mg">160 mg</span>
+                </button>
+                <button type="button" class="sheet-preset-btn" id="p-filtre" onclick="setPreset(120, 'Café Filtre', 'p-filtre')">
+                    <span class="preset-icon">🍵</span>
+                    <span class="preset-title">Filtre</span>
+                    <span class="preset-mg">120 mg</span>
+                </button>
+                <button type="button" class="sheet-preset-btn" id="p-the" onclick="setPreset(45, 'Thé / Matcha', 'p-the')">
+                    <span class="preset-icon">🌿</span>
+                    <span class="preset-title">Thé/Matcha</span>
+                    <span class="preset-mg">45 mg</span>
+                </button>
+                <button type="button" class="sheet-preset-btn" id="p-deca" onclick="setPreset(3, 'Déca', 'p-deca')">
+                    <span class="preset-icon">🌾</span>
+                    <span class="preset-title">Déca</span>
+                    <span class="preset-mg">3 mg</span>
+                </button>
+            </div>
+
+            <!-- DOSE PERSONNALISÉE -->
+            <div class="form-row">
+                <label class="form-label">Dose de caféine (mg)</label>
+                <input type="number" id="in-mg" class="form-input-number" placeholder="Quantité en mg" min="1" max="1000" value="70">
+            </div>
+
+            <!-- HORLOGE ANALOGIQUE ANDROID MATERIAL TIME PICKER -->
+            <div class="android-clock-card">
+                <div class="android-time-header">
+                    <div class="time-digit-box active" id="btn-mode-hours" onclick="setClockMode('hours')">
+                        <span class="digit-val" id="clock-h-display">12</span>
+                        <span class="digit-lbl">HEURE</span>
+                    </div>
+                    <span class="time-separator">:</span>
+                    <div class="time-digit-box" id="btn-mode-minutes" onclick="setClockMode('minutes')">
+                        <span class="digit-val" id="clock-m-display">00</span>
+                        <span class="digit-lbl">MINUTE</span>
+                    </div>
+                </div>
+
+                <div class="clock-dial-wrapper" id="clock-dial-wrapper">
+                    <svg id="clock-dial-svg" viewBox="0 0 220 220" width="220" height="220"></svg>
+                </div>
+
+                <div class="clock-quick-chips">
+                    <button type="button" class="btn-clock-chip highlight" onclick="setClockToNow()">À l'instant</button>
+                    <button type="button" class="btn-clock-chip" onclick="adjustClockMinutes(-15)">-15m</button>
+                    <button type="button" class="btn-clock-chip" onclick="adjustClockMinutes(-30)">-30m</button>
+                    <button type="button" class="btn-clock-chip" onclick="adjustClockMinutes(-60)">-1h</button>
+                </div>
+            </div>
+
+            <button class="btn-sheet-submit" onclick="saveEntry()">Enregistrer la prise</button>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-settings" onclick="closeModals()">
-        <div class="modal" onclick="event.stopPropagation()">
-            <span class="card-title">Profil métabolique</span>
-            <div style="text-align:center; padding: 20px 0;">
-                <span style="font-size:3.5rem; font-weight:900; color:var(--accent);" id="hl-val">5.0</span>
-                <span class="card-title">Heures (Demi-vie)</span>
-                <input type="range" id="hl-range" min="2" max="10" step="0.5" style="width:100%; margin-top:30px;" oninput="updateHl(this.value)">
+    <!-- BOTTOM SHEET : SETTINGS & PROFIL -->
+    <div class="sheet-backdrop" id="sheet-settings" onclick="closeSheets()">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <span class="sheet-title">Profil & Métabolisme</span>
+                <button class="sheet-close-btn" onclick="closeSheets()">✕</button>
             </div>
-            <button class="btn-choice" style="width:100%;" onclick="closeModals()">Fermer</button>
-            <button onclick="clearAll()" style="color:#444; background:none; border:none; width:100%; margin-top:25px; font-size:0.7rem; font-weight:700;">RÉINITIALISER TOUTES LES DONNÉES</button>
+
+            <div class="slider-box">
+                <span class="slider-number" id="hl-val">5.0</span>
+                <span class="slider-unit-lbl">Heures de demi-vie métabolique</span>
+                <input type="range" class="hl-range-input" id="hl-range" min="2" max="9" step="0.5" value="5" oninput="updateHl(this.value)">
+                
+                <div class="profile-presets-row">
+                    <button type="button" class="btn-profile-preset" onclick="setProfileHl(3.5)">⚡ Rapide (3.5h)</button>
+                    <button type="button" class="btn-profile-preset active" onclick="setProfileHl(5.0)">⚖️ Standard (5h)</button>
+                    <button type="button" class="btn-profile-preset" onclick="setProfileHl(7.0)">🐢 Lent (7h)</button>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Heure habituelle de coucher</label>
+                <input type="time" id="in-bedtime" class="form-input-time" value="23:00" onchange="updateBedtime(this.value)">
+            </div>
+
+            <div class="form-row">
+                <label class="form-label">Sauvegarde & Restauration</label>
+                <div class="data-backup-row">
+                    <button class="btn-action-outline" onclick="exportDataJSON()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export JSON
+                    </button>
+                    <button class="btn-action-outline" onclick="exportDataCSV()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                        Export CSV
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-danger-full" onclick="confirmReset()">RÉINITIALISER TOUTES LES DONNÉES</button>
         </div>
     </div>
+
+    <!-- BOTTOM SHEET : INSTALLATION GUIDE IOS -->
+    <div class="sheet-backdrop" id="sheet-ios-install" onclick="closeSheets()">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <span class="sheet-title">Installer sur votre écran d'accueil</span>
+                <button class="sheet-close-btn" onclick="closeSheets()">✕</button>
+            </div>
+
+            <div style="text-align: center; padding: 10px 0 16px;">
+                <img src="/icon.svg" alt="Suivi Caféine Pro" style="width: 64px; height: 64px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 6px 20px rgba(229, 184, 66, 0.3);">
+                <div style="font-size: 1rem; font-weight: 800; color: #FFFFFF;">Suivi Caféine Pro</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Expérience PWA autonome et hors-ligne</div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--surface-border); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">1</div>
+                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Dans Safari ou Chrome, touchez le bouton <strong>Partager</strong> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>.</div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">2</div>
+                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Faites défiler le menu et sélectionnez <strong>« Sur l'écran d'accueil » ＋</strong>.</div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">3</div>
+                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Touchez <strong>Ajouter</strong> en haut à droite.</div>
+                </div>
+            </div>
+
+            <button class="btn-sheet-submit" onclick="closeSheets()">Compris</button>
+        </div>
+    </div>
+
+    <!-- BOTTOM SHEET : WIDGETS & RACCOURCIS RAPIDES -->
+    <div class="sheet-backdrop" id="sheet-widget-guide" onclick="closeSheets()">
+        <div class="bottom-sheet" onclick="event.stopPropagation()">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <span class="sheet-title">Widget & Raccourcis Rapides</span>
+                <button class="sheet-close-btn" onclick="closeSheets()">✕</button>
+            </div>
+
+            <!-- APERÇU LIVE DU WIDGET -->
+            <div style="background: linear-gradient(180deg, #151F33 0%, #0E1626 100%); border: 1px solid rgba(229, 184, 66, 0.35); border-radius: 16px; padding: 14px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 16px;">⚡</span>
+                        <span style="font-size: 0.78rem; font-weight: 800; color: #FFFFFF;">Widget Caféine 1-Tap</span>
+                    </div>
+                    <a href="/widget.html" target="_blank" style="font-size: 0.7rem; font-weight: 700; color: var(--accent); text-decoration: none; border: 1px solid rgba(229,184,66,0.3); padding: 3px 8px; border-radius: 6px; background: rgba(229,184,66,0.08);">
+                        Ouvrir le Widget ↗
+                    </a>
+                </div>
+                
+                <p style="font-size: 0.73rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 12px;">
+                    Enregistrez vos cafés en <strong>1 seul clic</strong> sans avoir à chercher dans les menus ! Deux solutions prêtes à l'emploi :
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
+                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">☕</span>
+                        <span class="quick-tap-label" style="font-size: 0.7rem;">Espresso</span>
+                        <span class="quick-tap-mg" style="font-size: 0.65rem;">70 mg</span>
+                    </button>
+                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
+                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">☕☕</span>
+                        <span class="quick-tap-label" style="font-size: 0.7rem;">Double</span>
+                        <span class="quick-tap-mg" style="font-size: 0.65rem;">140 mg</span>
+                    </button>
+                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
+                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">⚡</span>
+                        <span class="quick-tap-label" style="font-size: 0.7rem;">Monster</span>
+                        <span class="quick-tap-mg" style="font-size: 0.65rem;">160 mg</span>
+                    </button>
+                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
+                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">🍵</span>
+                        <span class="quick-tap-label" style="font-size: 0.7rem;">Filtre</span>
+                        <span class="quick-tap-mg" style="font-size: 0.65rem;">120 mg</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- EXPLICATIONS 2 MODES D'INSTALLATION -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--surface-border); border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <span>📱</span> Option 1 : Raccourci Icone (Android & iOS)
+                    </div>
+                    <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4;">
+                        Une fois l'application installée, <strong>maintenez votre doigt appuyé sur l'icône de l'app</strong> sur votre écran d'accueil. Un menu d'action rapide apparaît directement avec <em>Espresso</em>, <em>Double</em> et <em>Monster</em> !
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--surface-border); border-radius: 12px; padding: 12px;">
+                    <div style="font-size: 0.78rem; font-weight: 800; color: #FFFFFF; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                        <span>🧩</span> Option 2 : Écran Widget dédié
+                    </div>
+                    <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px;">
+                        Ajoutez la page <code>/widget.html</code> en favori ou sur votre écran d'accueil pour une interface ultra-compacte ne contenant que le taux en direct et les boutons de log.
+                    </p>
+                    <a href="/widget.html" class="btn-action-outline" style="text-decoration:none; display:inline-flex; width: 100%; justify-content: center;">
+                        Tester la vue Widget compacte
+                    </a>
+                </div>
+            </div>
+
+            <button class="btn-sheet-submit" onclick="closeSheets()">Fermer</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION WITH UNDO -->
+    <div class="toast-snack" id="app-toast">
+        <span class="toast-text" id="toast-msg">Boisson enregistrée !</span>
+        <button class="toast-undo-btn" id="toast-undo" onclick="undoLastEntry()">Annuler</button>
+    </div>
+
+</div>
 
 <script>
+    // --- ÉTAT GLOBAL DE L'APPLICATION ---
     let entries = JSON.parse(localStorage.getItem('caf_v10') || '[]');
     let hl = parseFloat(localStorage.getItem('caf_hl_v10') || '5');
-    let preset = { mg: 0, lbl: "" };
-    let chart;
+    let bedtimeStr = localStorage.getItem('caf_bedtime') || '23:00';
+    let preset = { mg: 70, lbl: "Espresso F7" };
+    
+    let chart = null;
+    let weeklyChart = null;
+    let displayedMg = 0.0;
+    let animTickerId = null;
+    let lastAddedEntryIndex = null;
+    let toastTimeout = null;
 
+    // Simulation dose (0 = off)
+    let simulationMg = 0;
+
+    // Cutoff candidate
+    let candidateDose = 70;
+    let candidateLabel = "Espresso (70 mg)";
+    let deferredPWAInstallPrompt = null;
+
+    // Analog clock state (Android Material Time Picker)
+    let selectedHour = new Date().getHours();
+    let selectedMinute = new Date().getMinutes();
+    let clockMode = 'hours'; // 'hours' | 'minutes'
+    let isClockDragging = false;
+
+    // --- INITIALISATION ---
     function init() {
-        initChart();
-        update();
-        setInterval(update, 15000);
         document.getElementById('hl-range').value = hl;
         document.getElementById('hl-val').innerText = hl.toFixed(1);
+        document.getElementById('in-bedtime').value = bedtimeStr;
+
+        initChart();
+        initWeeklyChart();
+        initAnalogClock();
+        initPWA();
+        handleUrlAction();
+        update(true);
+        updateWeeklyStats();
+
+        // Refresh periodically for real-time decay
+        setInterval(() => update(false), 15000);
     }
 
-    function calc(time) {
-        return entries.reduce((acc, i) => {
-            let diff = (time - new Date(i.d)) / 3600000;
-            return acc + (diff < 0 ? 0 : i.mg * Math.pow(0.5, diff / hl));
+    function handleUrlAction() {
+        const params = new URLSearchParams(window.location.search);
+        const quick = params.get('quick');
+        if (quick) {
+            if (quick === 'espresso') {
+                quickLogInstant(70, 'Espresso', '☕');
+            } else if (quick === 'double') {
+                quickLogInstant(140, 'Double Espresso', '☕☕');
+            } else if (quick === 'monster') {
+                quickLogInstant(160, 'Monster 500ml', '⚡');
+            } else if (quick === 'filtre') {
+                quickLogInstant(120, 'Café Filtre', '🍵');
+            }
+            // Clean url without reload
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    // --- MODÈLE PHARMACOCINÉTIQUE AVANCÉ (BATEMAN AVEC ABSORPTION) ---
+    // ka : absorption gastro-intestinale (~3.5 h^-1, pic à ~35-40 min)
+    // ke : élimination hépatique (ln(2) / hl)
+    function calc(targetTime, extraDose = 0) {
+        const ka = 3.5;
+        const ke = Math.LN2 / hl;
+        const tMax = Math.log(ka / ke) / (ka - ke);
+        const normFactor = Math.exp(-ke * tMax) - Math.exp(-ka * tMax);
+
+        let total = entries.reduce((acc, i) => {
+            const entryTime = new Date(i.d);
+            const deltaH = (targetTime - entryTime) / 3600000;
+            if (deltaH <= 0) return acc;
+
+            const curve = (Math.exp(-ke * deltaH) - Math.exp(-ka * deltaH)) / normFactor;
+            return acc + (i.mg * Math.max(0, curve));
         }, 0);
+
+        if (extraDose > 0) {
+            const now = new Date();
+            const deltaH = (targetTime - now) / 3600000;
+            if (deltaH > 0) {
+                const curve = (Math.exp(-ke * deltaH) - Math.exp(-ka * deltaH)) / normFactor;
+                total += extraDose * Math.max(0, curve);
+            }
+        }
+
+        return total;
     }
 
-    function update() {
+    // Dérivée instantanée de concentration
+    function calcRateOfChange(now) {
+        const delta = 1 / 60; // 1 min en heures
+        const c1 = calc(now);
+        const c2 = calc(new Date(now.getTime() + delta * 3600000));
+        return (c2 - c1) / delta;
+    }
+
+    // Calcul du % d'occupation des récepteurs d'Adénosine
+    // Formule pharmacologique : Occupancy = C / (C + EC50)
+    // avec EC50 ~ 25 mg résiduels dans l'organisme
+    function calcAdenosineOccupancy(caffeineMg) {
+        if (caffeineMg <= 0) return 0;
+        const ec50 = 25;
+        const pct = (caffeineMg / (caffeineMg + ec50)) * 100;
+        return Math.min(99, Math.round(pct));
+    }
+
+    // Projection de l'heure sous 50 mg
+    function findTimeBelowThreshold(threshold = 50) {
+        const now = new Date();
+        const currentLevel = calc(now);
+        const rate = calcRateOfChange(now);
+
+        if (currentLevel <= threshold && rate <= 0.1) {
+            return { alreadyBelow: true, time: null };
+        }
+
+        for (let m = 5; m <= 36 * 60; m += 10) {
+            const futureTime = new Date(now.getTime() + m * 60000);
+            if (calc(futureTime) <= threshold) {
+                return { alreadyBelow: false, time: futureTime };
+            }
+        }
+        return { alreadyBelow: false, time: null };
+    }
+
+    // Animation fluide du compteur
+    function animateMgDisplay(targetVal) {
+        const el = document.getElementById('mg-display');
+        const startVal = displayedMg;
+        const duration = 400;
+        const startTime = performance.now();
+
+        if (animTickerId) cancelAnimationFrame(animTickerId);
+
+        function step(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            const currentVal = startVal + (targetVal - startVal) * ease;
+            el.innerText = currentVal.toFixed(1);
+
+            if (progress < 1) {
+                animTickerId = requestAnimationFrame(step);
+            } else {
+                displayedMg = targetVal;
+                el.innerText = targetVal.toFixed(1);
+            }
+        }
+        animTickerId = requestAnimationFrame(step);
+    }
+
+    // Flash lumineux sur le cadran
+    function triggerPulseFlash() {
+        const pulse = document.getElementById('pulse');
+        if (!pulse) return;
+        pulse.classList.remove('flash');
+        void pulse.offsetWidth;
+        pulse.classList.add('flash');
+        setTimeout(() => pulse.classList.remove('flash'), 850);
+
+        // Tactile vibration
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate([15, 30, 20]); } catch(e) {}
+        }
+    }
+
+    // Mise à jour de la jauge circulaire
+    function updateCircularGauge(currentVal) {
+        const arc = document.getElementById('gauge-arc');
+        if (!arc) return;
+        const pct = Math.min(1, currentVal / 200);
+        const offset = 480 - (pct * 360);
+        arc.style.strokeDashoffset = offset;
+    }
+
+    function update(isInitial = false) {
         const now = new Date();
         const cur = calc(now);
-        document.getElementById('mg-display').innerText = cur.toFixed(1);
+        const rate = calcRateOfChange(now);
 
-        // Update Pulse
-        let speed = 4 - (Math.min(cur, 150) / 150) * 3.5;
-        document.getElementById('pulse').style.setProperty('--pulse-speed', Math.max(speed, 0.5) + 's');
-        
-        // Sleep Status
-        const ton = new Date(); ton.setHours(23,0,0);
-        const pred = calc(ton);
-        const txt = document.getElementById('sleep-txt');
-        
-        if(pred < 50) { txt.style.color = '#4CAF50'; txt.innerText = `Sommeil idéal (23h) : ${pred.toFixed(0)}mg`; }
-        else if(pred < 100) { txt.style.color = '#FF9800'; txt.innerText = `Impact léger (23h) : ${pred.toFixed(0)}mg`; }
-        else { txt.style.color = '#F44336'; txt.innerText = `Impact critique (23h) : ${pred.toFixed(0)}mg`; }
+        if (isInitial) {
+            displayedMg = cur;
+            document.getElementById('mg-display').innerText = cur.toFixed(1);
+        } else {
+            animateMgDisplay(cur);
+        }
+
+        updateCircularGauge(cur);
+
+        // Vitesse du halo pulsé
+        const speed = Math.max(0.8, 3.8 - (Math.min(cur, 200) / 200) * 2.8);
+        document.getElementById('pulse').style.setProperty('--pulse-speed', speed.toFixed(2) + 's');
+
+        // Puce d'état cinétique
+        const chip = document.getElementById('kinetic-status-chip');
+        const chipTxt = document.getElementById('kinetic-txt');
+        if (chip && chipTxt) {
+            if (cur < 2 && rate <= 0.1) {
+                chipTxt.innerText = "● Au repos";
+                chip.style.borderColor = "var(--surface-border)";
+                chip.style.color = "var(--text-secondary)";
+            } else if (rate > 2.0) {
+                chipTxt.innerHTML = "▲ Montée (Absorption digestive)";
+                chip.style.borderColor = "rgba(229, 184, 66, 0.4)";
+                chip.style.color = "var(--accent)";
+            } else if (rate < -1.0) {
+                chipTxt.innerHTML = "▼ Élimination hépatique";
+                chip.style.borderColor = "rgba(75, 105, 255, 0.3)";
+                chip.style.color = "#8CA4FF";
+            } else {
+                chipTxt.innerHTML = "◆ Plateau de concentration";
+                chip.style.borderColor = "rgba(16, 185, 129, 0.3)";
+                chip.style.color = "var(--success)";
+            }
+        }
+
+        // Blocage de l'adénosine
+        const adenoPct = calcAdenosineOccupancy(cur);
+        const adenoElem = document.getElementById('adenosine-pct');
+        const adenoDesc = document.getElementById('adenosine-desc');
+        if (adenoElem) adenoElem.innerText = `${adenoPct}%`;
+        if (adenoDesc) {
+            if (adenoPct < 20) adenoDesc.innerText = "Sommeil facile";
+            else if (adenoPct < 55) adenoDesc.innerText = "Vigilance modérée";
+            else adenoDesc.innerText = "Forte excitation";
+        }
+
+        // Taux au coucher
+        const [bedH, bedM] = bedtimeStr.split(':').map(Number);
+        const tonight = new Date();
+        tonight.setHours(bedH, bedM, 0, 0);
+        if (tonight <= now && now.getHours() >= bedH) {
+            tonight.setDate(tonight.getDate() + 1);
+        }
+        const predAtBedtime = calc(tonight);
+
+        document.getElementById('bedtime-subtile-lbl').innerText = `Au coucher (${bedtimeStr})`;
+        const bedValTxt = document.getElementById('bedtime-val-txt');
+        const bedDot = document.getElementById('bedtime-dot');
+        const bedDesc = document.getElementById('bedtime-desc');
+
+        if (predAtBedtime < 30) {
+            bedDot.innerText = '🟢';
+            bedValTxt.innerText = `${predAtBedtime.toFixed(0)} mg`;
+            bedValTxt.style.color = 'var(--success)';
+            if (bedDesc) bedDesc.innerText = "Sommeil profond idéal";
+        } else if (predAtBedtime <= 50) {
+            bedDot.innerText = '🟡';
+            bedValTxt.innerText = `${predAtBedtime.toFixed(0)} mg`;
+            bedValTxt.style.color = 'var(--warning)';
+            if (bedDesc) bedDesc.innerText = "Seuil limite acceptable";
+        } else {
+            bedDot.innerText = '🔴';
+            bedValTxt.innerText = `${predAtBedtime.toFixed(0)} mg`;
+            bedValTxt.style.color = 'var(--danger)';
+            if (bedDesc) bedDesc.innerText = "Risque d'insomnie";
+        }
+
+        // Seuil 50mg
+        const thresholdRes = findTimeBelowThreshold(50);
+        const threshValTxt = document.getElementById('threshold-val-txt');
+        if (thresholdRes.alreadyBelow) {
+            threshValTxt.innerText = "Déjà serein";
+            threshValTxt.style.color = 'var(--success)';
+        } else if (thresholdRes.time) {
+            const h = thresholdRes.time.getHours().toString().padStart(2, '0');
+            const m = thresholdRes.time.getMinutes().toString().padStart(2, '0');
+            threshValTxt.innerText = `${h}h${m}`;
+            threshValTxt.style.color = thresholdRes.time < tonight ? 'var(--success)' : 'var(--warning)';
+        } else {
+            threshValTxt.innerText = "> 36 heures";
+            threshValTxt.style.color = 'var(--danger)';
+        }
 
         updateChart(now);
+        updateCutoffCalculation();
         renderHistory();
+    }
+
+    // --- QUICK LOG 1-TAP DIRECT ---
+    function quickLogInstant(mg, lbl, emoji) {
+        const now = new Date();
+        entries.push({ mg, lbl, d: now.toISOString() });
+        lastAddedEntryIndex = entries.length - 1;
+        saveStorage();
+        triggerPulseFlash();
+
+        showToast(`${emoji} ${lbl} (${mg} mg) enregistré à ${now.getHours()}h${now.getMinutes().toString().padStart(2, '0')}`);
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('app-toast');
+        const txt = document.getElementById('toast-msg');
+        if (!toast || !txt) return;
+
+        txt.innerText = msg;
+        toast.classList.add('show');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4500);
+    }
+
+    function undoLastEntry() {
+        if (lastAddedEntryIndex !== null && entries[lastAddedEntryIndex]) {
+            entries.splice(lastAddedEntryIndex, 1);
+            lastAddedEntryIndex = null;
+            saveStorage();
+            const toast = document.getElementById('app-toast');
+            if (toast) toast.classList.remove('show');
+        }
     }
 
     function renderHistory() {
         const list = document.getElementById('history-list');
+        const countTag = document.getElementById('entry-count-tag');
         list.innerHTML = "";
-        [...entries].sort((a,b) => new Date(b.d) - new Date(a.d)).slice(0,4).forEach((i, idx) => {
+
+        if (entries.length === 0) {
+            countTag.innerText = "0 prise";
+            list.innerHTML = `<div class="empty-placeholder">Aucune boisson enregistrée pour le moment.</div>`;
+            return;
+        }
+
+        countTag.innerText = `${entries.length} prise${entries.length > 1 ? 's' : ''}`;
+        
+        const sorted = entries.map((item, originalIndex) => ({ item, originalIndex }))
+            .sort((a, b) => new Date(b.item.d) - new Date(a.item.d));
+
+        sorted.slice(0, 6).forEach(({ item, originalIndex }) => {
+            const d = new Date(item.d);
+            const timeStr = `${d.getHours().toString().padStart(2, '0')}h${d.getMinutes().toString().padStart(2, '0')}`;
             const div = document.createElement('div');
-            div.className = 'log-item';
-            div.innerHTML = `<div class="log-info"><strong>${i.lbl}</strong><div>${i.mg}mg • Pris à ${new Date(i.d).getHours()}h${new Date(i.d).getMinutes().toString().padStart(2,'0')}</div></div><div class="del-btn" onclick="removeEntry(${entries.length - 1 - idx})">Suppr.</div>`;
+            div.className = 'history-item';
+            
+            let icon = "☕";
+            if (item.mg >= 150) icon = "⚡";
+            else if (item.mg <= 10) icon = "🌾";
+            else if (item.mg <= 50) icon = "🌿";
+
+            div.innerHTML = `
+                <div class="history-item-left">
+                    <div class="history-icon-badge">${icon}</div>
+                    <div class="history-text-col">
+                        <strong>${item.lbl}</strong>
+                        <span>${item.mg} mg · Pris à ${timeStr}</span>
+                    </div>
+                </div>
+                <button class="btn-delete-entry" onclick="removeEntry(${originalIndex})">Supprimer</button>
+            `;
             list.appendChild(div);
         });
     }
 
-    function saveEntry() {
-        const custom = parseFloat(document.getElementById('in-mg').value);
-        const mg = custom || preset.mg;
-        const lbl = custom ? "Perso" : preset.lbl;
-        const t = document.getElementById('in-t').value;
-        if(!mg || !t) return;
-        const [h,m] = t.split(':');
-        const d = new Date(); d.setHours(h,m,0);
-        entries.push({mg, lbl, d});
-        saveStorage();
-        closeModals();
-    }
-
-    function removeEntry(idx) { entries.splice(idx, 1); saveStorage(); }
-    function saveStorage() { localStorage.setItem('caf_v10', JSON.stringify(entries)); update(); }
-    function openModal(id) { 
-        document.getElementById(id).style.display = 'flex'; 
-        if(id === 'modal-add') document.getElementById('in-t').value = new Date().getHours().toString().padStart(2,'0')+":"+new Date().getMinutes().toString().padStart(2,'0');
-    }
-    function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-    function setPreset(mg, lbl, id) {
+    function setPreset(mg, lbl, elemId) {
         preset = { mg, lbl };
-        document.querySelectorAll('.btn-choice').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.sheet-preset-btn').forEach(b => b.classList.remove('active'));
+        if (elemId && document.getElementById(elemId)) {
+            document.getElementById(elemId).classList.add('active');
+        }
+        document.getElementById('in-mg').value = mg;
     }
-    function updateHl(v) { hl = parseFloat(v); document.getElementById('hl-val').innerText = hl.toFixed(1); localStorage.setItem('caf_hl_v10', v); update(); }
-    function clearAll() { if(confirm("Supprimer toutes les données ?")) { entries = []; saveStorage(); location.reload(); } }
 
+    // --- HORLOGE ANALOGIQUE ANDROID TACTILE (MATERIAL DESIGN TIME PICKER) ---
+    function initAnalogClock() {
+        const wrap = document.getElementById('clock-dial-wrapper');
+        if (!wrap) return;
+
+        wrap.addEventListener('pointerdown', (e) => {
+            wrap.setPointerCapture(e.pointerId);
+            isClockDragging = true;
+            handlePointerClock(e);
+        });
+
+        wrap.addEventListener('pointermove', (e) => {
+            if (isClockDragging) {
+                handlePointerClock(e);
+            }
+        });
+
+        wrap.addEventListener('pointerup', (e) => {
+            if (isClockDragging) {
+                isClockDragging = false;
+                try { wrap.releasePointerCapture(e.pointerId); } catch(err) {}
+                onPointerClockRelease();
+            }
+        });
+
+        wrap.addEventListener('pointercancel', () => {
+            isClockDragging = false;
+        });
+
+        updateClockUI();
+    }
+
+    function setClockMode(mode) {
+        clockMode = mode;
+        updateClockUI();
+    }
+
+    function setClockToNow() {
+        const now = new Date();
+        selectedHour = now.getHours();
+        selectedMinute = now.getMinutes();
+        updateClockUI();
+    }
+
+    function adjustClockMinutes(delta) {
+        let totalMin = selectedHour * 60 + selectedMinute + delta;
+        if (totalMin < 0) totalMin += 24 * 60;
+        totalMin = totalMin % (24 * 60);
+        selectedHour = Math.floor(totalMin / 60);
+        selectedMinute = totalMin % 60;
+        updateClockUI();
+    }
+
+    function handlePointerClock(e) {
+        const wrap = document.getElementById('clock-dial-wrapper');
+        if (!wrap) return;
+        const rect = wrap.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+
+        const dx = x - cx;
+        const dy = y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+        if (angle < 0) angle += 360;
+
+        if (clockMode === 'hours') {
+            const isInner = dist < (rect.width * 0.32);
+            let step = Math.round(angle / 30) % 12;
+            if (isInner) {
+                selectedHour = (step === 0) ? 0 : step + 12;
+            } else {
+                selectedHour = (step === 0) ? 12 : step;
+            }
+        } else {
+            selectedMinute = Math.round(angle / 6) % 60;
+        }
+
+        // Haptic feedback tick
+        if ('vibrate' in navigator) {
+            try { navigator.vibrate(8); } catch(err) {}
+        }
+
+        updateClockUI();
+    }
+
+    function onPointerClockRelease() {
+        if (clockMode === 'hours') {
+            setTimeout(() => {
+                setClockMode('minutes');
+            }, 180);
+        }
+    }
+
+    function updateClockUI() {
+        const hElem = document.getElementById('clock-h-display');
+        const mElem = document.getElementById('clock-m-display');
+        const btnH = document.getElementById('btn-mode-hours');
+        const btnM = document.getElementById('btn-mode-minutes');
+
+        if (hElem) hElem.innerText = selectedHour.toString().padStart(2, '0');
+        if (mElem) mElem.innerText = selectedMinute.toString().padStart(2, '0');
+
+        if (btnH && btnM) {
+            if (clockMode === 'hours') {
+                btnH.classList.add('active');
+                btnM.classList.remove('active');
+            } else {
+                btnM.classList.add('active');
+                btnH.classList.remove('active');
+            }
+        }
+
+        renderClockDial();
+    }
+
+    function renderClockDial() {
+        const svg = document.getElementById('clock-dial-svg');
+        if (!svg) return;
+
+        const cx = 110, cy = 110;
+        let html = '';
+
+        // Fond du cadran
+        html += `<circle cx="${cx}" cy="${cy}" r="106" fill="#0A0F1D" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" />`;
+
+        if (clockMode === 'hours') {
+            const isInner = (selectedHour >= 13 && selectedHour <= 23) || selectedHour === 0;
+            const targetR = isInner ? 54 : 82;
+            const normHour = isInner ? (selectedHour === 0 ? 12 : selectedHour - 12) : selectedHour;
+            const angleRad = (normHour * 30 - 90) * Math.PI / 180;
+            const tipX = cx + targetR * Math.cos(angleRad);
+            const tipY = cy + targetR * Math.sin(angleRad);
+
+            // Aiguille
+            html += `<line x1="${cx}" y1="${cy}" x2="${tipX}" y2="${tipY}" stroke="#E5B842" stroke-width="2.5" />`;
+            html += `<circle cx="${tipX}" cy="${tipY}" r="15" fill="#E5B842" />`;
+            html += `<circle cx="${cx}" cy="${cy}" r="4" fill="#E5B842" />`;
+
+            // Anneau externe (1 à 12)
+            for (let h = 1; h <= 12; h++) {
+                const rad = (h * 30 - 90) * Math.PI / 180;
+                const x = cx + 82 * Math.cos(rad);
+                const y = cy + 82 * Math.sin(rad);
+                const isSelected = (!isInner && selectedHour === h);
+                const color = isSelected ? '#000000' : '#FFFFFF';
+                const weight = isSelected ? '800' : '600';
+                html += `<text x="${x}" y="${y + 4.5}" text-anchor="middle" font-size="12" font-weight="${weight}" fill="${color}" font-family="Plus Jakarta Sans" pointer-events="none">${h}</text>`;
+            }
+
+            // Anneau interne (13 à 00)
+            for (let i = 1; i <= 12; i++) {
+                const val = (i === 12) ? 0 : i + 12;
+                const textVal = (val === 0) ? '00' : val.toString();
+                const rad = (i * 30 - 90) * Math.PI / 180;
+                const x = cx + 54 * Math.cos(rad);
+                const y = cy + 54 * Math.sin(rad);
+                const isSelected = (isInner && selectedHour === val);
+                const color = isSelected ? '#000000' : '#7E8B9F';
+                const weight = isSelected ? '800' : '600';
+                html += `<text x="${x}" y="${y + 4}" text-anchor="middle" font-size="10.5" font-weight="${weight}" fill="${color}" font-family="Plus Jakarta Sans" pointer-events="none">${textVal}</text>`;
+            }
+        } else {
+            // Mode minutes
+            const targetR = 82;
+            const angleRad = (selectedMinute * 6 - 90) * Math.PI / 180;
+            const tipX = cx + targetR * Math.cos(angleRad);
+            const tipY = cy + targetR * Math.sin(angleRad);
+
+            html += `<line x1="${cx}" y1="${cy}" x2="${tipX}" y2="${tipY}" stroke="#E5B842" stroke-width="2.5" />`;
+            html += `<circle cx="${tipX}" cy="${tipY}" r="15" fill="#E5B842" />`;
+            html += `<circle cx="${cx}" cy="${cy}" r="4" fill="#E5B842" />`;
+
+            for (let i = 0; i < 12; i++) {
+                const m = i * 5;
+                const textVal = m.toString().padStart(2, '0');
+                const rad = (i * 30 - 90) * Math.PI / 180;
+                const x = cx + 82 * Math.cos(rad);
+                const y = cy + 82 * Math.sin(rad);
+                const isSelected = (selectedMinute === m);
+                const color = isSelected ? '#000000' : '#FFFFFF';
+                const weight = isSelected ? '800' : '600';
+                html += `<text x="${x}" y="${y + 4.5}" text-anchor="middle" font-size="11.5" font-weight="${weight}" fill="${color}" font-family="Plus Jakarta Sans" pointer-events="none">${textVal}</text>`;
+            }
+
+            if (selectedMinute % 5 !== 0) {
+                html += `<text x="${tipX}" y="${tipY + 4}" text-anchor="middle" font-size="10" font-weight="800" fill="#000000" font-family="Plus Jakarta Sans" pointer-events="none">${selectedMinute.toString().padStart(2, '0')}</text>`;
+            }
+        }
+
+        svg.innerHTML = html;
+    }
+
+    function saveEntry() {
+        const customMg = parseFloat(document.getElementById('in-mg').value);
+        const mg = customMg || preset.mg;
+        const lbl = customMg !== preset.mg ? `Café personnalisé` : preset.lbl;
+
+        const d = new Date();
+        d.setHours(selectedHour, selectedMinute, 0, 0);
+
+        if (!mg || isNaN(mg) || mg <= 0) return;
+
+        entries.push({ mg, lbl, d: d.toISOString() });
+        lastAddedEntryIndex = entries.length - 1;
+        saveStorage();
+        triggerPulseFlash();
+        closeSheets();
+
+        showToast(`${lbl} (${mg} mg) enregistré à ${selectedHour}h${selectedMinute.toString().padStart(2, '0')}`);
+    }
+
+    function removeEntry(idx) {
+        entries.splice(idx, 1);
+        saveStorage();
+    }
+
+    function saveStorage() {
+        localStorage.setItem('caf_v10', JSON.stringify(entries));
+        update(false);
+        updateWeeklyStats();
+    }
+
+    function openSheet(id) {
+        const sheet = document.getElementById(id);
+        if (!sheet) return;
+        sheet.classList.add('active');
+
+        if (id === 'sheet-add') {
+            setClockToNow();
+            setClockMode('hours');
+        }
+    }
+
+    function closeSheets() {
+        document.querySelectorAll('.sheet-backdrop').forEach(s => s.classList.remove('active'));
+    }
+
+    function setProfileHl(val) {
+        updateHl(val);
+        document.querySelectorAll('.btn-profile-preset').forEach(b => b.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+    }
+
+    function updateHl(val) {
+        hl = parseFloat(val);
+        document.getElementById('hl-range').value = hl;
+        document.getElementById('hl-val').innerText = hl.toFixed(1);
+        localStorage.setItem('caf_hl_v10', val);
+        update(false);
+    }
+
+    function updateBedtime(val) {
+        if (!val) return;
+        bedtimeStr = val;
+        localStorage.setItem('caf_bedtime', val);
+        update(false);
+    }
+
+    function confirmReset() {
+        if (confirm("Réinitialiser tout l'historique et vos paramètres ?")) {
+            entries = [];
+            saveStorage();
+            closeSheets();
+            showToast("Toutes les données ont été réinitialisées.");
+        }
+    }
+
+    // --- SIMULATEUR INTERACTIF ---
+    function setSimulationDose(mg, btnId) {
+        simulationMg = mg;
+        document.querySelectorAll('.btn-sim-pill').forEach(b => b.classList.remove('active'));
+        if (btnId && document.getElementById(btnId)) {
+            document.getElementById(btnId).classList.add('active');
+        }
+
+        const simLegend = document.getElementById('sim-legend');
+        const simTag = document.getElementById('sim-impact-tag');
+
+        if (mg > 0) {
+            if (simLegend) simLegend.style.display = 'inline-flex';
+            
+            // Calcul impact simulation au coucher
+            const [bedH, bedM] = bedtimeStr.split(':').map(Number);
+            const now = new Date();
+            const tonight = new Date();
+            tonight.setHours(bedH, bedM, 0, 0);
+            if (tonight <= now && now.getHours() >= bedH) tonight.setDate(tonight.getDate() + 1);
+
+            const simulatedBedLevel = calc(tonight, mg);
+            if (simTag) {
+                if (simulatedBedLevel <= 50) {
+                    simTag.innerText = `+${mg}mg : ${simulatedBedLevel.toFixed(0)} mg au coucher (OK ✅)`;
+                    simTag.style.color = "var(--success)";
+                } else {
+                    simTag.innerText = `+${mg}mg : ${simulatedBedLevel.toFixed(0)} mg au coucher (Critique ⚠️)`;
+                    simTag.style.color = "var(--danger)";
+                }
+            }
+        } else {
+            if (simLegend) simLegend.style.display = 'none';
+            if (simTag) {
+                simTag.innerText = "Inactif";
+                simTag.style.color = "var(--text-muted)";
+            }
+        }
+
+        updateChart(new Date());
+    }
+
+    // --- PWA & SERVICE WORKER ---
+    function initPWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(err => {
+                console.warn('[SW] Erreur enregistrement:', err);
+            });
+        }
+
+        const installBtn = document.getElementById('btn-pwa-install');
+        if (!installBtn) return;
+
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                             window.navigator.standalone === true;
+        if (isStandalone) {
+            installBtn.style.display = 'none';
+            return;
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPWAInstallPrompt = e;
+            installBtn.style.display = 'inline-flex';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredPWAInstallPrompt = null;
+            installBtn.style.display = 'none';
+        });
+    }
+
+    function handleInstallClick() {
+        const isIOS = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+
+        if (deferredPWAInstallPrompt) {
+            deferredPWAInstallPrompt.prompt();
+            deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    const btn = document.getElementById('btn-pwa-install');
+                    if (btn) btn.style.display = 'none';
+                }
+                deferredPWAInstallPrompt = null;
+            });
+        } else {
+            openSheet('sheet-ios-install');
+        }
+    }
+
+    // --- CALCUL DE L'HEURE LIMITE DU DERNIER CAFÉ ---
+    function setCutoffCandidate(mg, label, btnId) {
+        candidateDose = mg;
+        candidateLabel = label;
+        document.querySelectorAll('.btn-cutoff-option').forEach(b => b.classList.remove('active'));
+        if (btnId && document.getElementById(btnId)) {
+            document.getElementById(btnId).classList.add('active');
+        }
+        const tag = document.getElementById('cutoff-drink-tag');
+        if (tag) tag.innerText = label;
+        updateCutoffCalculation();
+    }
+
+    function updateCutoffCalculation() {
+        const now = new Date();
+        const [bedH, bedM] = bedtimeStr.split(':').map(Number);
+        const tonight = new Date();
+        tonight.setHours(bedH, bedM, 0, 0);
+
+        if (tonight <= now && now.getHours() >= bedH) {
+            tonight.setDate(tonight.getDate() + 1);
+        }
+
+        const currentAtBedtime = calc(tonight);
+        const safeThreshold = 50;
+        const remainingMargin = safeThreshold - currentAtBedtime;
+
+        const timeDisplay = document.getElementById('cutoff-time-display');
+        const badge = document.getElementById('cutoff-status-badge');
+        const badgeTxt = document.getElementById('cutoff-status-txt');
+        const expl = document.getElementById('cutoff-expl-txt');
+        const tlNowTxt = document.getElementById('tl-now-txt');
+        const tlCutoffTxt = document.getElementById('tl-cutoff-txt');
+        const tlBedTxt = document.getElementById('tl-bed-txt');
+
+        if (!timeDisplay || !badge || !badgeTxt || !expl) return;
+
+        tlNowTxt.innerText = `${now.getHours()}h${now.getMinutes().toString().padStart(2, '0')}`;
+        tlBedTxt.innerText = bedtimeStr;
+        expl.innerText = `Calculé pour un coucher à ${bedtimeStr} (taux résiduel actuel au coucher : ${currentAtBedtime.toFixed(0)} mg / seuil max conseillé : 50 mg).`;
+
+        if (remainingMargin <= 0) {
+            timeDisplay.innerText = "Dépassé";
+            timeDisplay.style.color = "var(--danger)";
+            badge.style.borderColor = "rgba(239, 68, 68, 0.4)";
+            badgeTxt.style.color = "var(--danger)";
+            badgeTxt.innerHTML = "🚫 Seuil de sommeil déjà atteint ce soir";
+            tlCutoffTxt.innerText = "Dépassé";
+            return;
+        }
+
+        if (candidateDose <= remainingMargin) {
+            const hStr = bedH.toString().padStart(2, '0');
+            const mStr = bedM.toString().padStart(2, '0');
+            timeDisplay.innerText = `${hStr}h${mStr}`;
+            timeDisplay.style.color = "var(--success)";
+            badge.style.borderColor = "rgba(16, 185, 129, 0.4)";
+            badgeTxt.style.color = "var(--success)";
+            badgeTxt.innerHTML = "🟢 Sans risque (dose faible)";
+            tlCutoffTxt.innerText = `${hStr}h${mStr}`;
+            return;
+        }
+
+        const deltaHours = hl * (Math.log(candidateDose / remainingMargin) / Math.LN2);
+        const cutoffTime = new Date(tonight.getTime() - deltaHours * 3600000);
+
+        const cutoffH = cutoffTime.getHours().toString().padStart(2, '0');
+        const cutoffM = cutoffTime.getMinutes().toString().padStart(2, '0');
+        timeDisplay.innerText = `${cutoffH}h${cutoffM}`;
+        tlCutoffTxt.innerText = `${cutoffH}h${cutoffM}`;
+
+        const diffMs = cutoffTime - now;
+
+        if (diffMs > 0) {
+            const diffTotalMin = Math.round(diffMs / 60000);
+            const remH = Math.floor(diffTotalMin / 60);
+            const remM = diffTotalMin % 60;
+            const timeRemainingStr = remH > 0 ? `${remH}h${remM.toString().padStart(2, '0')}` : `${remM} min`;
+
+            timeDisplay.style.color = "#FFFFFF";
+            badge.style.borderColor = "rgba(16, 185, 129, 0.4)";
+            badgeTxt.style.color = "var(--success)";
+            badgeTxt.innerHTML = `🟢 Encore <strong>${timeRemainingStr}</strong> avant la coupure`;
+        } else {
+            const pastMin = Math.round(Math.abs(diffMs) / 60000);
+            const pastH = Math.floor(pastMin / 60);
+            const pastM = pastMin % 60;
+            const pastStr = pastH > 0 ? `${pastH}h${pastM.toString().padStart(2, '0')}` : `${pastM} min`;
+
+            timeDisplay.style.color = "var(--warning)";
+            badge.style.borderColor = "rgba(245, 158, 11, 0.4)";
+            badgeTxt.style.color = "var(--warning)";
+            badgeTxt.innerHTML = `⚠️ Fenêtre passée depuis ${pastStr}`;
+        }
+    }
+
+    // --- GRAPHIQUE PHARMACOCINÉTIQUE ET SIMULATION ---
     function initChart() {
         const ctx = document.getElementById('mainChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 190);
+        gradient.addColorStop(0, 'rgba(229, 184, 66, 0.28)');
+        gradient.addColorStop(1, 'rgba(229, 184, 66, 0.0)');
+
         chart = new Chart(ctx, {
             type: 'line',
-            data: { labels: [], datasets: [{ data: [], borderColor: '#D4AF37', borderWidth: 2, tension: 0.3, fill: true, backgroundColor: 'rgba(212, 175, 55, 0.05)', pointRadius: 0 }] },
-            options: { responsive: true, plugins: { legend: false }, scales: { y: { display: false }, x: { ticks: { color: '#444', font: { size: 10 } }, grid: { display: false } } } }
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Caféine active',
+                        data: [],
+                        borderColor: '#E5B842',
+                        borderWidth: 2.6,
+                        tension: 0.38,
+                        fill: true,
+                        backgroundColor: gradient,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#FFFFFF',
+                        pointHoverBorderColor: '#E5B842'
+                    },
+                    {
+                        label: 'Seuil Sommeil (50mg)',
+                        data: [],
+                        borderColor: 'rgba(16, 185, 129, 0.65)',
+                        borderWidth: 1.6,
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0,
+                        pointHoverRadius: 0
+                    },
+                    {
+                        label: 'Simulation (+ café)',
+                        data: [],
+                        borderColor: '#F43F5E',
+                        borderWidth: 2.0,
+                        borderDash: [4, 4],
+                        tension: 0.38,
+                        fill: false,
+                        pointRadius: 0,
+                        pointHoverRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#151D33',
+                        titleColor: '#E5B842',
+                        bodyColor: '#FFFFFF',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                if (context.datasetIndex === 0) return `Taux réel : ${context.parsed.y} mg`;
+                                if (context.datasetIndex === 1) return `Seuil sommeil recommandé : 50 mg`;
+                                if (context.datasetIndex === 2) return `Simulation : ${context.parsed.y} mg`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        display: true,
+                        beginAtZero: true,
+                        suggestedMax: 100,
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 9, family: 'Plus Jakarta Sans' },
+                            stepSize: 50,
+                            callback: value => value + 'm'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.04)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 9, family: 'Plus Jakarta Sans' },
+                            maxRotation: 0,
+                            autoSkip: false
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
         });
     }
 
     function updateChart(now) {
-        const labels = []; const points = [];
-        for(let i=0; i<=12; i+=2) {
-            const t = new Date(now.getTime() + i*3600000);
-            labels.push(t.getHours() + 'h');
-            points.push(calc(t).toFixed(1));
+        if (!chart) return;
+        const labels = [];
+        const caffeinePoints = [];
+        const thresholdPoints = [];
+        const simulationPoints = [];
+
+        for (let i = 0; i <= 16; i += 2) {
+            const t = new Date(now.getTime() + i * 3600000);
+            const hourLabel = `${t.getHours()}h`;
+            labels.push(hourLabel);
+            
+            const realLevel = parseFloat(calc(t).toFixed(1));
+            caffeinePoints.push(realLevel);
+            thresholdPoints.push(50);
+
+            if (simulationMg > 0) {
+                const simLevel = parseFloat(calc(t, simulationMg).toFixed(1));
+                simulationPoints.push(simLevel);
+            }
         }
+
+        const maxLevel = Math.max(...caffeinePoints, ...simulationPoints, 60);
+        chart.options.scales.y.suggestedMax = Math.ceil(maxLevel / 50) * 50;
+
         chart.data.labels = labels;
-        chart.data.datasets[0].data = points;
+        chart.data.datasets[0].data = caffeinePoints;
+        chart.data.datasets[1].data = thresholdPoints;
+        chart.data.datasets[2].data = simulationMg > 0 ? simulationPoints : [];
         chart.update('none');
     }
 
-    init();
+    // --- ONGLETS PRINCIPAUX ---
+    function switchMainTab(tabName) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+        const btn = document.getElementById(`tab-btn-${tabName}`);
+        const pane = document.getElementById(`pane-${tabName}`);
+
+        if (btn) btn.classList.add('active');
+        if (pane) pane.classList.add('active');
+
+        if (tabName === 'today' && chart) chart.resize();
+        if (tabName === 'stats') {
+            updateWeeklyStats();
+            if (weeklyChart) weeklyChart.resize();
+        }
+    }
+
+    function initWeeklyChart() {
+        const ctx = document.getElementById('weeklyChart')?.getContext('2d');
+        if (!ctx) return;
+
+        weeklyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Caféine par jour',
+                        data: [],
+                        backgroundColor: 'rgba(229, 184, 66, 0.75)',
+                        hoverBackgroundColor: '#E5B842',
+                        borderColor: '#E5B842',
+                        borderWidth: 1.5,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#151D33',
+                        titleColor: '#E5B842',
+                        bodyColor: '#FFFFFF',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        callbacks: {
+                            label: ctx => `Dose cumulée : ${ctx.parsed.y} mg`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: 150,
+                        ticks: {
+                            color: '#64748B',
+                            font: { size: 9, family: 'Plus Jakarta Sans' },
+                            stepSize: 50,
+                            callback: value => value + 'm'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.04)',
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#94A3B8',
+                            font: { size: 9.5, family: 'Plus Jakarta Sans', weight: '600' }
+                        },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    function getWeeklyStats() {
+        const now = new Date();
+        const days = [];
+
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+            let dayLabel = d.toLocaleDateString('fr-FR', { weekday: 'short' });
+            dayLabel = dayLabel.charAt(0).toUpperCase() + dayLabel.slice(1);
+            if (i === 0) dayLabel = "Auj.";
+            else if (i === 1) dayLabel = "Hier";
+
+            days.push({
+                date: d,
+                label: dayLabel,
+                formattedDate: `${d.getDate()}/${d.getMonth() + 1}`,
+                totalMg: 0,
+                count: 0
+            });
+        }
+
+        const bevCounts = {};
+
+        entries.forEach(e => {
+            const entryDate = new Date(e.d);
+            days.forEach(day => {
+                if (entryDate.getFullYear() === day.date.getFullYear() &&
+                    entryDate.getMonth() === day.date.getMonth() &&
+                    entryDate.getDate() === day.date.getDate()) {
+                    day.totalMg += e.mg;
+                    day.count += 1;
+
+                    const lbl = e.lbl || "Boisson";
+                    if (!bevCounts[lbl]) bevCounts[lbl] = { count: 0, totalMg: 0 };
+                    bevCounts[lbl].count += 1;
+                    bevCounts[lbl].totalMg += e.mg;
+                }
+            });
+        });
+
+        const total7Days = days.reduce((sum, d) => sum + d.totalMg, 0);
+        const avgDailyMg = total7Days / 7;
+        const totalEntries = days.reduce((sum, d) => sum + d.count, 0);
+
+        let peakDay = days[0];
+        days.forEach(d => {
+            if (d.totalMg > peakDay.totalMg) peakDay = d;
+        });
+
+        return {
+            days,
+            total7Days,
+            avgDailyMg,
+            totalEntries,
+            peakDay,
+            bevCounts
+        };
+    }
+
+    function updateWeeklyStats() {
+        const stats = getWeeklyStats();
+
+        const avgDisplay = document.getElementById('weekly-avg-display');
+        if (avgDisplay) avgDisplay.innerText = stats.avgDailyMg.toFixed(1);
+
+        const totalDisplay = document.getElementById('weekly-total-display');
+        if (totalDisplay) totalDisplay.innerText = `${Math.round(stats.total7Days)} mg`;
+
+        const peakDisplay = document.getElementById('weekly-peak-display');
+        if (peakDisplay) {
+            peakDisplay.innerText = stats.peakDay.totalMg > 0
+                ? `${stats.peakDay.label} (${Math.round(stats.peakDay.totalMg)}m)`
+                : '--';
+        }
+
+        const countDisplay = document.getElementById('weekly-count-display');
+        if (countDisplay) {
+            countDisplay.innerText = `${stats.totalEntries} prise${stats.totalEntries > 1 ? 's' : ''}`;
+        }
+
+        const badge = document.getElementById('weekly-health-badge');
+        const txt = document.getElementById('weekly-health-txt');
+        if (badge && txt) {
+            if (stats.avgDailyMg === 0) {
+                badge.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                txt.style.color = 'var(--text-muted)';
+                txt.innerText = 'Aucune boisson sur les 7 derniers jours';
+            } else if (stats.avgDailyMg <= 400) {
+                badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                txt.style.color = 'var(--success)';
+                txt.innerHTML = `🟢 Moyenne saine (Inférieure au seuil EFSA 400 mg/j)`;
+            } else {
+                badge.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+                txt.style.color = 'var(--danger)';
+                txt.innerHTML = `🔴 Au-dessus de la recommandation EFSA (400 mg/j)`;
+            }
+        }
+
+        if (weeklyChart) {
+            weeklyChart.data.labels = stats.days.map(d => d.label);
+            const dataValues = stats.days.map(d => Math.round(d.totalMg));
+            weeklyChart.data.datasets[0].data = dataValues;
+
+            const maxDaily = Math.max(...dataValues, 100);
+            weeklyChart.options.scales.y.suggestedMax = Math.ceil(maxDaily / 50) * 50;
+            weeklyChart.update('none');
+        }
+
+        const bevList = document.getElementById('weekly-bev-list');
+        const bevCountTag = document.getElementById('weekly-bev-count-tag');
+        if (bevList && bevCountTag) {
+            bevList.innerHTML = '';
+            const bevKeys = Object.keys(stats.bevCounts);
+            
+            if (bevKeys.length === 0) {
+                bevCountTag.innerText = '0 type';
+                bevList.innerHTML = '<div class="empty-placeholder">Aucune boisson consommée cette semaine.</div>';
+            } else {
+                bevCountTag.innerText = `${bevKeys.length} type${bevKeys.length > 1 ? 's' : ''}`;
+                const sortedBevs = bevKeys
+                    .map(name => ({ name, ...stats.bevCounts[name] }))
+                    .sort((a, b) => b.totalMg - a.totalMg);
+
+                sortedBevs.forEach(b => {
+                    const pct = stats.total7Days > 0 ? Math.round((b.totalMg / stats.total7Days) * 100) : 0;
+                    const item = document.createElement('div');
+                    item.className = 'bev-progress-item';
+                    item.innerHTML = `
+                        <div class="bev-progress-header">
+                            <span>${b.name} (${b.count}×)</span>
+                            <span style="color:var(--accent);">${Math.round(b.totalMg)} mg · ${pct}%</span>
+                        </div>
+                        <div class="bev-progress-bar">
+                            <div class="bev-progress-fill" style="width: ${pct}%;"></div>
+                        </div>
+                    `;
+                    bevList.appendChild(item);
+                });
+            }
+        }
+    }
+
+    // --- EXPORTS DE DONNÉES ---
+    function exportDataJSON() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(entries, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `cafeine-pro-backup-${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+        showToast("Sauvegarde JSON exportée.");
+    }
+
+    function exportDataCSV() {
+        if (entries.length === 0) {
+            showToast("Aucune donnée à exporter.");
+            return;
+        }
+        let csvContent = "data:text/csv;charset=utf-8,Date,Heure,Boisson,Dose_mg\n";
+        entries.forEach(e => {
+            const d = new Date(e.d);
+            const dateStr = d.toISOString().slice(0,10);
+            const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+            csvContent += `${dateStr},${timeStr},"${e.lbl}",${e.mg}\n`;
+        });
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `cafeine-pro-${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        showToast("Exportation CSV téléchargée.");
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>

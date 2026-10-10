@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg-grad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1A2438"/>
+      <stop offset="100%" stop-color="#0B101B"/>
+    </radialGradient>
+    <radialGradient id="aura-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.45"/>
+      <stop offset="60%" stop-color="#D4AF37" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#AA820A"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg-grad)"/>
+
+  <!-- Golden Aura Glow -->
+  <circle cx="256" cy="256" r="190" fill="url(#aura-glow)"/>
+
+  <!-- Outer Ring Pulse -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#D4AF37" stroke-width="3" stroke-opacity="0.3" stroke-dasharray="10 6"/>
+
+  <!-- Coffee Cup & Steam -->
+  <!-- Steam Curves -->
+  <path d="M210 150 Q200 120 215 95" fill="none" stroke="url(#gold-grad)" stroke-width="7" stroke-linecap="round" opacity="0.8"/>
+  <path d="M256 140 Q246 105 260 80" fill="none" stroke="url(#gold-grad)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M302 150 Q292 120 305 95" fill="none" stroke="url(#gold-grad)" stroke-width="7" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Cup Body -->
+  <path d="M160 180 L352 180 L336 320 C332 355 300 375 256 375 C212 375 180 355 176 320 Z" fill="url(#gold-grad)"/>
+
+  <!-- Cup Inner Rim -->
+  <ellipse cx="256" cy="180" rx="96" ry="20" fill="#0B101B" stroke="url(#gold-grad)" stroke-width="4"/>
+
+  <!-- Coffee Level -->
+  <ellipse cx="256" cy="184" rx="86" ry="15" fill="#3D2314"/>
+
+  <!-- Cup Handle -->
+  <path d="M344 205 C385 205 405 235 405 265 C405 295 380 315 336 315" fill="none" stroke="url(#gold-grad)" stroke-width="20" stroke-linecap="round"/>
+
+  <!-- Saucer / Base -->
+  <path d="M140 400 Q256 425 372 400" fill="none" stroke="url(#gold-grad)" stroke-width="14" stroke-linecap="round"/>
+</svg>

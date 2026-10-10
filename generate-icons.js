@@ -1,0 +1,193 @@
+import fs from 'fs';
+import sharp from 'sharp';
+
+// SVG Master Design : Haute Définition, Esthétique Dark Luxury & Bio-Track
+const masterSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradients -->
+    <radialGradient id="bg-radial" cx="50%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#161F33"/>
+      <stop offset="55%" stop-color="#0A0E1A"/>
+      <stop offset="100%" stop-color="#04060A"/>
+    </radialGradient>
+    
+    <!-- Gold / Amber Premium Gradient -->
+    <linearGradient id="gold-primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3B0"/>
+      <stop offset="35%" stop-color="#F5B738"/>
+      <stop offset="70%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#92400E"/>
+    </linearGradient>
+
+    <linearGradient id="accent-cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <!-- Inner Crema Gradient -->
+    <radialGradient id="crema-grad" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#C2873E"/>
+      <stop offset="60%" stop-color="#6F3910"/>
+      <stop offset="100%" stop-color="#2D1506"/>
+    </radialGradient>
+
+    <!-- Glow Filter -->
+    <filter id="gold-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="28" result="blur"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base (Squircle safe area) -->
+  <rect width="512" height="512" rx="118" fill="url(#bg-radial)"/>
+
+  <!-- Subtle Rim Highlight -->
+  <rect x="2" y="2" width="508" height="508" rx="116" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+
+  <!-- Ambient Energy Halo -->
+  <circle cx="256" cy="256" r="155" fill="#D97706" opacity="0.22" filter="url(#soft-glow)"/>
+  
+  <!-- Outer Metabolic Orbit Ring (Safe Zone) -->
+  <circle cx="256" cy="256" r="162" fill="none" stroke="url(#gold-primary)" stroke-width="2.5" stroke-opacity="0.28" stroke-dasharray="12 8"/>
+  <circle cx="256" cy="256" r="162" fill="none" stroke="#FBBF24" stroke-width="4" stroke-linecap="round" stroke-dasharray="80 940" stroke-dashoffset="-40"/>
+
+  <!-- Center Artwork Container (Well inside 400x400 safe area) -->
+  <g transform="translate(0, 0)">
+    
+    <!-- Steam / Metabolic Curves (Rising Energy) -->
+    <path d="M216 155 C205 130 215 108 226 86" fill="none" stroke="url(#gold-primary)" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+    <path d="M256 145 C244 118 258 92 270 68" fill="none" stroke="url(#gold-primary)" stroke-width="8.5" stroke-linecap="round" filter="url(#gold-glow)"/>
+    <path d="M296 155 C285 130 295 108 306 86" fill="none" stroke="url(#gold-primary)" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Energy Particle Sparks -->
+    <circle cx="276" cy="62" r="3.5" fill="#FFF3B0"/>
+    <circle cx="220" cy="80" r="2.5" fill="#FBBF24"/>
+    <circle cx="312" cy="82" r="2.5" fill="#FBBF24"/>
+
+    <!-- Cup Body Outer -->
+    <path d="M168 184 L344 184 L330 318 C324 356 294 378 256 378 C218 378 188 356 182 318 Z" fill="url(#gold-primary)" filter="url(#gold-glow)"/>
+    
+    <!-- Cup Rim Top Outer -->
+    <ellipse cx="256" cy="184" rx="88" ry="22" fill="#20130B" stroke="url(#gold-primary)" stroke-width="4.5"/>
+
+    <!-- Crema Surface with Coffee Bean Silhouette -->
+    <ellipse cx="256" cy="184" rx="80" ry="17" fill="url(#crema-grad)"/>
+    
+    <!-- Golden Crema Wave Line -->
+    <path d="M192 184 Q224 178 256 184 T320 184" fill="none" stroke="#F5B738" stroke-width="2" opacity="0.7"/>
+
+    <!-- Minimalist Coffee Bean Emblem on Cup Belly -->
+    <g transform="translate(256, 280) scale(0.9)">
+      <!-- Left Bean Half -->
+      <path d="M-5 -26 C-24 -22 -32 -2 -28 18 C-25 30 -16 38 -5 40 C-7 22 -7 2 -5 -26 Z" fill="#180F06" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+      <!-- Right Bean Half -->
+      <path d="M5 -26 C24 -22 32 -2 28 18 C25 30 16 38 5 40 C7 22 7 2 5 -26 Z" fill="#180F06" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+      <!-- Bean Central Curve (Lightning / Crease) -->
+      <path d="M-1 -22 Q5 4 -3 20 Q-7 28 0 36" fill="none" stroke="url(#gold-primary)" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Ergonomic Cup Handle -->
+    <path d="M336 208 C375 208 396 235 396 268 C396 300 372 320 330 320" fill="none" stroke="url(#gold-primary)" stroke-width="18" stroke-linecap="round"/>
+    <path d="M336 208 C375 208 396 235 396 268 C396 300 372 320 330 320" fill="none" stroke="#FFF3B0" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+
+    <!-- Saucer / Dynamic Base Pedestal -->
+    <ellipse cx="256" cy="392" rx="108" ry="14" fill="#0E1626" stroke="url(#gold-primary)" stroke-width="4"/>
+    <ellipse cx="256" cy="391" rx="80" ry="7" fill="rgba(245, 183, 56, 0.25)"/>
+
+    <!-- Dynamic Metabolic Pulse Wave under Saucer -->
+    <path d="M128 418 Q192 418 214 418 L228 398 L244 438 L260 410 L274 424 L288 418 Q320 418 384 418" fill="none" stroke="#F59E0B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+</svg>`;
+
+// Version Maskable (Optimisée pour le découpage circulaire d'Android, rayon de sécurité de 80%)
+const maskableSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg-m" cx="50%" cy="40%" r="70%">
+      <stop offset="0%" stop-color="#161F33"/>
+      <stop offset="60%" stop-color="#0B101B"/>
+      <stop offset="100%" stop-color="#05080E"/>
+    </radialGradient>
+    <linearGradient id="gold-m" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF3B0"/>
+      <stop offset="35%" stop-color="#F5B738"/>
+      <stop offset="70%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#92400E"/>
+    </linearGradient>
+    <radialGradient id="crema-m" cx="45%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#C2873E"/>
+      <stop offset="60%" stop-color="#6F3910"/>
+      <stop offset="100%" stop-color="#2D1506"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Full Bleed Background for Maskable Icon -->
+  <rect width="512" height="512" fill="url(#bg-m)"/>
+
+  <!-- Centered & Scaled to 78% for absolute Safe Zone compliance -->
+  <g transform="translate(56, 56) scale(0.78)">
+    <!-- Halo -->
+    <circle cx="256" cy="256" r="145" fill="#D97706" opacity="0.25"/>
+    <circle cx="256" cy="256" r="162" fill="none" stroke="url(#gold-m)" stroke-width="3" stroke-opacity="0.35" stroke-dasharray="12 8"/>
+    
+    <!-- Steam -->
+    <path d="M216 155 C205 130 215 108 226 86" fill="none" stroke="url(#gold-m)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M256 145 C244 118 258 92 270 68" fill="none" stroke="url(#gold-m)" stroke-width="8.5" stroke-linecap="round"/>
+    <path d="M296 155 C285 130 295 108 306 86" fill="none" stroke="url(#gold-m)" stroke-width="7" stroke-linecap="round"/>
+
+    <!-- Cup Body -->
+    <path d="M168 184 L344 184 L330 318 C324 356 294 378 256 378 C218 378 188 356 182 318 Z" fill="url(#gold-m)"/>
+    <ellipse cx="256" cy="184" rx="88" ry="22" fill="#20130B" stroke="url(#gold-m)" stroke-width="4.5"/>
+    <ellipse cx="256" cy="184" rx="80" ry="17" fill="url(#crema-m)"/>
+
+    <!-- Bean Emblem -->
+    <g transform="translate(256, 280) scale(0.9)">
+      <path d="M-5 -26 C-24 -22 -32 -2 -28 18 C-25 30 -16 38 -5 40 C-7 22 -7 2 -5 -26 Z" fill="#180F06"/>
+      <path d="M5 -26 C24 -22 32 -2 28 18 C25 30 16 38 5 40 C7 22 7 2 5 -26 Z" fill="#180F06"/>
+      <path d="M-1 -22 Q5 4 -3 20 Q-7 28 0 36" fill="none" stroke="url(#gold-m)" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- Handle -->
+    <path d="M336 208 C375 208 396 235 396 268 C396 300 372 320 330 320" fill="none" stroke="url(#gold-m)" stroke-width="18" stroke-linecap="round"/>
+
+    <!-- Saucer & ECG -->
+    <ellipse cx="256" cy="392" rx="108" ry="14" fill="#0E1626" stroke="url(#gold-m)" stroke-width="4"/>
+    <path d="M128 418 Q192 418 214 418 L228 398 L244 438 L260 410 L274 424 L288 418 Q320 418 384 418" fill="none" stroke="#F59E0B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>`;
+
+async function run() {
+  console.log('Writing /icon.svg...');
+  fs.writeFileSync('./icon.svg', masterSvg, 'utf8');
+
+  console.log('Generating pwa-512x512.png...');
+  await sharp(Buffer.from(masterSvg))
+    .resize(512, 512)
+    .png()
+    .toFile('./pwa-512x512.png');
+
+  console.log('Generating pwa-192x192.png...');
+  await sharp(Buffer.from(masterSvg))
+    .resize(192, 192)
+    .png()
+    .toFile('./pwa-192x192.png');
+
+  console.log('Generating apple-touch-icon.png (180x180)...');
+  await sharp(Buffer.from(masterSvg))
+    .resize(180, 180)
+    .png()
+    .toFile('./apple-touch-icon.png');
+
+  console.log('Generating pwa-maskable-512x512.png...');
+  await sharp(Buffer.from(maskableSvg))
+    .resize(512, 512)
+    .png()
+    .toFile('./pwa-maskable-512x512.png');
+
+  console.log('All icons generated successfully!');
+}
+
+run().catch(console.error);

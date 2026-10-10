@@ -1934,33 +1934,36 @@
         </div>
     </div>
 
-    <!-- BOTTOM SHEET : INSTALLATION GUIDE IOS -->
+    <!-- BOTTOM SHEET : INSTALLATION GUIDE (BRAVE, CHROME, SAFARI) -->
     <div class="sheet-backdrop" id="sheet-ios-install" onclick="closeSheets()">
         <div class="bottom-sheet" onclick="event.stopPropagation()">
             <div class="sheet-handle"></div>
             <div class="sheet-header">
-                <span class="sheet-title">Installer sur votre écran d'accueil</span>
+                <span class="sheet-title">Installer l'application & Icône</span>
                 <button class="sheet-close-btn" onclick="closeSheets()">✕</button>
             </div>
 
             <div style="text-align: center; padding: 10px 0 16px;">
-                <img src="/icon.svg" alt="Suivi Caféine Pro" style="width: 64px; height: 64px; border-radius: 14px; margin-bottom: 8px; box-shadow: 0 6px 20px rgba(229, 184, 66, 0.3);">
-                <div style="font-size: 1rem; font-weight: 800; color: #FFFFFF;">Suivi Caféine Pro</div>
-                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">Expérience PWA autonome et hors-ligne</div>
+                <img src="/pwa-512x512.png" alt="Suivi Caféine Pro" style="width: 72px; height: 72px; border-radius: 18px; margin-bottom: 8px; box-shadow: 0 8px 24px rgba(245, 183, 56, 0.35); border: 1px solid rgba(245, 183, 56, 0.4);">
+                <div style="font-size: 1.05rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.01em;">Suivi Caféine Pro</div>
+                <div style="font-size: 0.72rem; color: var(--accent); margin-top: 3px; font-weight: 600;">✨ Nouvelle icône HD personnalisée (Dark Luxury & Bio-Track)</div>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--surface-border); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">1</div>
-                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Dans Safari ou Chrome, touchez le bouton <strong>Partager</strong> <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle;"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>.</div>
+            <!-- EXPLICATION BRAVE vs SAFARI -->
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid var(--surface-border); border-radius: 14px; padding: 14px; margin-bottom: 12px;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span>🦁</span> Pourquoi un simple raccourci sur Brave ?
                 </div>
-                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">2</div>
-                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Faites défiler le menu et sélectionnez <strong>« Sur l'écran d'accueil » ＋</strong>.</div>
+                <div style="font-size: 0.74rem; color: var(--text-secondary); line-height: 1.45; margin-bottom: 10px;">
+                    • <strong>Sur Brave Android :</strong> Dans le menu <strong>⋮</strong>, choisissez <strong>« Installer l'application »</strong> (icône d'écran) plutôt que <em>« Ajouter à l'écran d'accueil »</em>. Cela génère une vraie application autonome (WebAPK) sans logo de navigateur incrusté.<br>
+                    • <strong>Sur Brave iOS (iPhone) :</strong> Apple interdit à Brave d'installer des PWA autonomes. Ouvrez le lien dans <strong>Safari</strong>, faites <strong>Partager</strong> ⬆️ puis <strong>« Sur l'écran d'accueil »</strong> pour obtenir la vraie app plein écran avec l'icône personnalisée.
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <div style="width: 24px; height: 24px; background: rgba(229, 184, 66, 0.2); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.75rem; flex-shrink: 0;">3</div>
-                    <div style="font-size: 0.78rem; color: #FFFFFF; line-height: 1.4;">Touchez <strong>Ajouter</strong> en haut à droite.</div>
+            </div>
+
+            <div style="background: rgba(245, 183, 56, 0.06); border: 1px solid rgba(245, 183, 56, 0.2); border-radius: 12px; padding: 12px; margin-bottom: 16px;">
+                <div style="font-size: 0.76rem; font-weight: 700; color: var(--accent); margin-bottom: 6px;">🎯 Astuce raccourcis natifs :</div>
+                <div style="font-size: 0.72rem; color: #E2E8F0; line-height: 1.4;">
+                    Une fois installée, un <strong>appui long sur l'icône</strong> ouvre directement les boutons <em>Espresso (70 mg)</em>, <em>Double (140 mg)</em> et <em>Monster (160 mg)</em> sans ouvrir l'application complète !
                 </div>
             </div>
 

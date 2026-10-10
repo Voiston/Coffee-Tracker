@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cafeine-pro-v2';
+const CACHE_NAME = 'cafeine-pro-v3';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const PRECACHE_ASSETS = [
   '/icon.svg',
   '/pwa-192x192.png',
   '/pwa-512x512.png',
+  '/pwa-maskable-512x512.png',
   '/apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/chart.js'
 ];

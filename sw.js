@@ -1,6 +1,6 @@
 // Service Worker - Suivi Caféine Pro
 // Version du cache
-const CACHE_NAME = 'cafeine-pro-v5';
+const CACHE_NAME = 'cafeine-pro-v6';
 
 // Ressources de l'App Shell et CDN externes
 const PRECACHE_ASSETS = [

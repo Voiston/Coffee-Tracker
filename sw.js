@@ -1,6 +1,6 @@
 // Service Worker - Suivi Caféine Pro
 // Version du cache
-const CACHE_NAME = 'cafeine-pro-v6';
+const CACHE_NAME = 'cafeine-pro-v7';
 
 // Ressources de l'App Shell et CDN externes
 const PRECACHE_ASSETS = [
@@ -48,13 +48,32 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch : Stratégie "Cache First, fallback to Network" avec mise en cache dynamique
+// Fetch : Stratégie "Network First" pour la navigation/HTML et "Cache First" pour les assets statiques
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+  const isHtml = event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/';
 
-  // Gérer les requêtes locales et les CDN autorisés (Google Fonts, Chart.js)
+  // Pour le HTML : Network First (avec fallback cache en cas de hors-ligne)
+  if (isHtml) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(async () => {
+          return (await caches.match(event.request)) || (await caches.match('./index.html')) || (await caches.match('./'));
+        })
+    );
+    return;
+  }
+
+  // Pour les assets statiques (images, polices, CDN) : Cache First
   const isSameOrigin = url.origin === self.location.origin;
   const isAllowedCdn = url.hostname.includes('googleapis.com') ||
                        url.hostname.includes('gstatic.com') ||
@@ -66,14 +85,11 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      // 1. Si présent en cache, renvoyer immédiatement (Cache First)
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      // 2. Sinon, requête réseau (fallback to Network)
       return fetch(event.request).then((networkResponse) => {
-        // Enregistrer la nouvelle ressource en cache si valide
         if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -81,13 +97,6 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(async (fetchError) => {
-        // 3. Si hors-ligne et navigation de page, fallback sur index.html
-        if (event.request.mode === 'navigate') {
-          const fallback = await caches.match('./index.html') || await caches.match('./');
-          if (fallback) return fallback;
-        }
-        throw fetchError;
       });
     })
   );

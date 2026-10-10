@@ -352,91 +352,131 @@
             text-overflow: ellipsis;
         }
 
-        /* --- RAPID 1-TAP ACTION STRIP (GAME CHANGER UX) --- */
-        .quick-strip-card {
-            width: 100%;
-            margin-top: 14px;
-            background: rgba(21, 29, 51, 0.55);
-            border: 1px solid rgba(229, 184, 66, 0.2);
-            border-radius: var(--radius-lg);
-            padding: 12px 14px;
-            z-index: 2;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        .bio-tile-label-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px;
         }
 
-        .quick-strip-header {
+        /* --- INFOBULLES / TOOLTIPS PÉDAGOGIQUES BIO --- */
+        .btn-info-bubble {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--surface-border);
+            color: var(--text-muted);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            font-size: 0.62rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            vertical-align: middle;
+            transition: all 0.15s ease;
+            line-height: 1;
+            padding: 0;
+            font-family: inherit;
+            flex-shrink: 0;
+        }
+
+        .btn-info-bubble:hover {
+            color: var(--accent);
+            border-color: rgba(229, 184, 66, 0.5);
+            background: rgba(229, 184, 66, 0.15);
+            transform: scale(1.12);
+        }
+
+        .tooltip-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(7, 10, 18, 0.78);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 250;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.22s ease;
+            padding: 20px;
+        }
+
+        .tooltip-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .tooltip-card {
+            background: linear-gradient(180deg, #151F33 0%, #0E1626 100%);
+            border: 1px solid rgba(229, 184, 66, 0.35);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65), 0 0 24px rgba(229, 184, 66, 0.12);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            transform: scale(0.95);
+            transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .tooltip-backdrop.active .tooltip-card {
+            transform: scale(1);
+        }
+
+        .tooltip-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
         }
 
-        .quick-strip-title {
-            font-size: 0.68rem;
+        .tooltip-title {
+            font-size: 0.95rem;
             font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
             color: var(--accent);
             display: flex;
             align-items: center;
-            gap: 5px;
-        }
-
-        .quick-strip-hint {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .quick-buttons-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
             gap: 6px;
         }
 
-        .btn-quick-tap {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 8px 4px;
+        .tooltip-close-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: none;
+            color: var(--text-muted);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            cursor: pointer;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 2px;
-            cursor: pointer;
-            transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.15s ease;
+        }
+
+        .tooltip-close-btn:hover {
             color: #FFFFFF;
-            font-family: inherit;
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .btn-quick-tap:hover {
-            background: rgba(229, 184, 66, 0.12);
-            border-color: rgba(229, 184, 66, 0.4);
-            transform: translateY(-2px);
+        .tooltip-body {
+            font-size: 0.82rem;
+            color: #CBD5E1;
+            line-height: 1.55;
         }
 
-        .btn-quick-tap:active {
-            transform: scale(0.95);
-            background: rgba(229, 184, 66, 0.22);
-        }
-
-        .quick-tap-emoji {
-            font-size: 1.15rem;
-            line-height: 1;
-        }
-
-        .quick-tap-label {
-            font-size: 0.7rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-
-        .quick-tap-mg {
-            font-size: 0.62rem;
-            font-weight: 700;
-            color: var(--accent);
-            opacity: 0.9;
+        @media (max-width: 420px) {
+            .brand-sub {
+                display: none;
+            }
+            .btn-action-label {
+                display: none;
+            }
+            .btn-top-action {
+                padding: 0 9px;
+            }
         }
 
         /* --- SEGMENTED NAVIGATION TABS --- */
@@ -820,22 +860,26 @@
         }
 
         .btn-delete-entry {
-            background: transparent;
-            border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border-subtle);
             color: var(--text-muted);
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 6px 10px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.16s ease;
-            font-family: inherit;
+            flex-shrink: 0;
+            padding: 0;
         }
 
         .btn-delete-entry:hover {
             color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.14);
+            border-color: rgba(239, 68, 68, 0.3);
+            transform: scale(1.05);
         }
 
         .empty-placeholder {
@@ -950,7 +994,7 @@
         /* --- FLOATING MAIN ACTION BUTTON --- */
         .fab-container {
             position: fixed;
-            bottom: 24px;
+            bottom: calc(24px + env(safe-area-inset-bottom, 0px));
             left: 0;
             right: 0;
             display: flex;
@@ -1654,15 +1698,15 @@
             </div>
         </div>
         <div class="top-actions">
-            <button class="btn-top-action" onclick="openSheet('sheet-widget-guide')" title="Widget écran d'accueil">
+            <button class="btn-top-action" onclick="openSheet('sheet-widget-guide')" title="Guide & Vue Widget">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                WIDGET
+                <span class="btn-action-label">Widget</span>
             </button>
-            <button class="btn-top-action btn-pwa-install" id="btn-pwa-install" onclick="handleInstallClick()">
+            <button class="btn-top-action btn-pwa-install" id="btn-pwa-install" onclick="handleInstallClick()" title="Installer l'application">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                INSTALLER
+                <span class="btn-action-label">Installer</span>
             </button>
-            <button class="btn-top-action" onclick="openSheet('sheet-settings')" aria-label="Paramètres">
+            <button class="btn-top-action btn-settings-icon" onclick="openSheet('sheet-settings')" aria-label="Paramètres" title="Paramètres métaboliques">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
             </button>
         </div>
@@ -1708,7 +1752,10 @@
                 <!-- 3 VITAL BIO-TILES -->
                 <div class="bio-tiles-grid">
                     <div class="bio-tile">
-                        <span class="bio-tile-label" id="bedtime-subtile-lbl">Au coucher (23h)</span>
+                        <div class="bio-tile-label-row">
+                            <span class="bio-tile-label" id="bedtime-subtile-lbl">Au coucher (23h)</span>
+                            <button type="button" class="btn-info-bubble" onclick="openTooltip('bedtime')" aria-label="Infos seuil sommeil">ℹ</button>
+                        </div>
                         <span class="bio-tile-value" id="bedtime-subtile-val">
                             <span id="bedtime-dot">🟢</span> <span id="bedtime-val-txt">0 mg</span>
                         </span>
@@ -1716,7 +1763,10 @@
                     </div>
 
                     <div class="bio-tile">
-                        <span class="bio-tile-label">Adénosine bloquée</span>
+                        <div class="bio-tile-label-row">
+                            <span class="bio-tile-label">Adénosine bloquée</span>
+                            <button type="button" class="btn-info-bubble" onclick="openTooltip('adeno')" aria-label="Infos adénosine">ℹ</button>
+                        </div>
                         <span class="bio-tile-value">
                             <span id="adenosine-pct">0%</span>
                         </span>
@@ -1724,7 +1774,10 @@
                     </div>
 
                     <div class="bio-tile">
-                        <span class="bio-tile-label">Dose du jour</span>
+                        <div class="bio-tile-label-row">
+                            <span class="bio-tile-label">Dose du jour</span>
+                            <button type="button" class="btn-info-bubble" onclick="openTooltip('today_dose')" aria-label="Infos dose EFSA">ℹ</button>
+                        </div>
                         <span class="bio-tile-value" id="today-total-subtile-val">
                             <span id="today-total-val-txt">0 mg</span>
                         </span>
@@ -1735,7 +1788,7 @@
                 <!-- BOUTON D'AJOUT AVANCÉ (VISIBLE SUR DESKTOP) -->
                 <button type="button" class="btn-desktop-add" onclick="openSheet('sheet-add')">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    Nouvelle boisson (Heure & Dose)
+                    + Enregistrer une boisson
                 </button>
             </section>
         </aside>
@@ -1773,7 +1826,10 @@
                         <span class="card-title">Heure limite du dernier café</span>
                         <span class="card-subtitle">Pour préserver votre nuit selon votre profil</span>
                     </div>
-                    <span class="card-badge-clean">Seuil sommeil &le; 50 mg</span>
+                    <span class="card-badge-clean" style="display:inline-flex; align-items:center; gap:4px;">
+                        Seuil sommeil &le; 50 mg
+                        <button type="button" class="btn-info-bubble" onclick="openTooltip('bedtime')" aria-label="Pourquoi le seuil de 50mg ?">ℹ</button>
+                    </span>
                 </div>
 
                 <!-- SELECTION RAPIDE DE LA BOISSON CIBLE -->
@@ -1814,7 +1870,7 @@
                     </div>
 
                     <p class="cutoff-explanation" id="cutoff-expl-txt">
-                        Calculé pour garantir un taux résiduel inférieur à 50 mg au coucher.
+                        Dernier créneau pour consommer cette boisson sans dépasser le seuil de 50 mg résiduel au coucher.
                     </p>
                 </div>
             </article>
@@ -1826,7 +1882,10 @@
                         <span class="card-title">Cinétique & Projection (16h)</span>
                         <span class="card-subtitle">Modèle d'absorption Bateman & élimination</span>
                     </div>
-                    <span class="card-badge-clean">Temps réel</span>
+                    <span class="card-badge-clean" style="display:inline-flex; align-items:center; gap:4px;">
+                        Temps réel
+                        <button type="button" class="btn-info-bubble" onclick="openTooltip('bateman')" aria-label="Infos cinétique Bateman">ℹ</button>
+                    </span>
                 </div>
 
                 <div class="chart-wrap">
@@ -1989,7 +2048,7 @@
     <div class="fab-container">
         <button class="btn-fab" onclick="openSheet('sheet-add')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Nouvelle boisson (Heure & Dose)
+            + Enregistrer une boisson
         </button>
     </div>
 
@@ -2083,7 +2142,10 @@
 
             <div class="slider-box">
                 <span class="slider-number" id="hl-val">5.0</span>
-                <span class="slider-unit-lbl">Heures de demi-vie métabolique</span>
+                <span class="slider-unit-lbl" style="display:inline-flex; align-items:center; justify-content:center; gap:5px;">
+                    Heures de demi-vie métabolique (CYP1A2)
+                    <button type="button" class="btn-info-bubble" onclick="openTooltip('halflife')" aria-label="Infos demi-vie CYP1A2">ℹ</button>
+                </span>
                 <input type="range" class="hl-range-input" id="hl-range" min="2" max="9" step="0.5" value="5" oninput="updateHl(this.value)">
                 
                 <div class="profile-presets-row">
@@ -2162,44 +2224,21 @@
                 <button class="sheet-close-btn" onclick="closeSheets()">✕</button>
             </div>
 
-            <!-- APERÇU LIVE DU WIDGET -->
-            <div style="background: linear-gradient(180deg, #151F33 0%, #0E1626 100%); border: 1px solid rgba(229, 184, 66, 0.35); border-radius: 16px; padding: 14px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+            <!-- APERÇU DU WIDGET -->
+            <div style="background: linear-gradient(180deg, #151F33 0%, #0E1626 100%); border: 1px solid rgba(229, 184, 66, 0.35); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <div style="display: flex; align-items: center; gap: 6px;">
-                        <span style="font-size: 16px;">⚡</span>
-                        <span style="font-size: 0.78rem; font-weight: 800; color: #FFFFFF;">Widget Caféine 1-Tap</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 18px;">☕</span>
+                        <span style="font-size: 0.85rem; font-weight: 800; color: #FFFFFF;">Vue Widget Express</span>
                     </div>
-                    <a href="/widget.html" target="_blank" style="font-size: 0.7rem; font-weight: 700; color: var(--accent); text-decoration: none; border: 1px solid rgba(229,184,66,0.3); padding: 3px 8px; border-radius: 6px; background: rgba(229,184,66,0.08);">
+                    <a href="/widget.html" target="_blank" style="font-size: 0.72rem; font-weight: 700; color: var(--accent); text-decoration: none; border: 1px solid rgba(229,184,66,0.3); padding: 4px 10px; border-radius: 8px; background: rgba(229,184,66,0.08);">
                         Ouvrir le Widget ↗
                     </a>
                 </div>
                 
-                <p style="font-size: 0.73rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 12px;">
-                    Enregistrez vos cafés en <strong>1 seul clic</strong> sans avoir à chercher dans les menus ! Deux solutions prêtes à l'emploi :
+                <p style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.45;">
+                    Une interface autonome ultra-légère conçue pour votre écran d'accueil, affichant le taux en direct et l'impact sur le sommeil.
                 </p>
-
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
-                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">☕</span>
-                        <span class="quick-tap-label" style="font-size: 0.7rem;">Espresso</span>
-                        <span class="quick-tap-mg" style="font-size: 0.65rem;">70 mg</span>
-                    </button>
-                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
-                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">☕☕</span>
-                        <span class="quick-tap-label" style="font-size: 0.7rem;">Double</span>
-                        <span class="quick-tap-mg" style="font-size: 0.65rem;">140 mg</span>
-                    </button>
-                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
-                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">⚡</span>
-                        <span class="quick-tap-label" style="font-size: 0.7rem;">Monster</span>
-                        <span class="quick-tap-mg" style="font-size: 0.65rem;">160 mg</span>
-                    </button>
-                    <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵'); closeSheets();" style="border-radius: 8px; padding: 8px 6px;">
-                        <span class="quick-tap-emoji" style="font-size: 1.1rem;">🍵</span>
-                        <span class="quick-tap-label" style="font-size: 0.7rem;">Filtre</span>
-                        <span class="quick-tap-mg" style="font-size: 0.65rem;">120 mg</span>
-                    </button>
-                </div>
             </div>
 
             <!-- EXPLICATIONS 2 MODES D'INSTALLATION -->
@@ -2234,6 +2273,17 @@
     <div class="toast-snack" id="app-toast">
         <span class="toast-text" id="toast-msg">Boisson enregistrée !</span>
         <button class="toast-undo-btn" id="toast-undo" onclick="undoLastEntry()">Annuler</button>
+    </div>
+
+    <!-- BIOMETRIC EXPLANATION TOOLTIP MODAL -->
+    <div class="tooltip-backdrop" id="app-tooltip-modal" onclick="closeTooltip()">
+        <div class="tooltip-card" onclick="event.stopPropagation()">
+            <div class="tooltip-header">
+                <span class="tooltip-title" id="tooltip-title">💡 Information</span>
+                <button type="button" class="tooltip-close-btn" onclick="closeTooltip()" aria-label="Fermer">✕</button>
+            </div>
+            <div class="tooltip-body" id="tooltip-body"></div>
+        </div>
     </div>
 
 </div>
@@ -2597,10 +2647,56 @@
                         <span>${item.mg} mg · Pris à ${timeStr}</span>
                     </div>
                 </div>
-                <button class="btn-delete-entry" onclick="removeEntry(${originalIndex})">Supprimer</button>
+                <button type="button" class="btn-delete-entry" onclick="removeEntry(${originalIndex})" aria-label="Supprimer cette prise" title="Supprimer la prise">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
             `;
             list.appendChild(div);
         });
+    }
+
+    // --- DICTIONNAIRE PÉDAGOGIQUE INFOBULLES ---
+    const TOOLTIP_DATA = {
+        adeno: {
+            title: "🧠 Adénosine & Récepteurs A1 / A2A",
+            body: "L'adénosine est la molécule qui s'accumule naturellement dans le cerveau au fil des heures éveillées pour créer la <strong>pression de sommeil</strong> (la sensation de fatigue).<br><br>La caféine possède une structure moléculaire quasi identique : elle se fixe sur les récepteurs A1 et A2A et <strong>bloque le signal de somnolence</strong> sans pour autant dissiper l'adénosine sous-jacente. Plus ce pourcentage est élevé, plus votre vigilance est maintenue artificiellement."
+        },
+        bedtime: {
+            title: "💤 Le seuil critique de 50 mg au coucher",
+            body: "Même si vous parvenez à vous endormir avec une dose résiduelle supérieure à 50 mg, la recherche en neurobiologie démontre que votre <strong>sommeil profond à ondes lentes (NREM 3)</strong> est amputé de 20% à 40%.<br><br>Ce stade étant indispensable au nettoyage métabolique neuronal et à la récupération physique, un taux trop élevé au coucher entraîne une sensation d'épuisement dès le réveil."
+        },
+        today_dose: {
+            title: "🛡️ Dose quotidienne & Recommandation EFSA",
+            body: "L'Autorité Européenne de Sécurité des Aliments (EFSA) fixe le seuil de sécurité à <strong>400 mg de caféine par jour</strong> pour un adulte en bonne santé (environ 5 espressos simples), et pas plus de <strong>200 mg en une seule prise</strong>.<br><br>Dépasser régulièrement ce plafond majore les risques de nervosité, de tachycardie et de micro-réveils nocturnes."
+        },
+        halflife: {
+            title: "🧬 Demi-vie hépatique & Enzyme CYP1A2",
+            body: "La demi-vie correspond au temps requis pour que votre foie élimine <strong>50% de la caféine circulante</strong>. Elle est traitée à 95% par l'enzyme hépatique <strong>CYP1A2</strong>.<br><br>La moyenne est de 5 heures, mais varie de 3h (métaboliseurs ultra-rapides, sportifs, fumeurs) à plus de 7-8h (métaboliseurs lents, prise de contraceptifs oraux). Ajustez ce curseur pour un calcul pharmacologique sur-mesure."
+        },
+        bateman: {
+            title: "📈 Modèle cinétique de Bateman",
+            body: "La projection repose sur une équation différentielle bi-compartimentale :<br>1. <strong>Phase d'absorption gastro-intestinale (ka)</strong> : pic plasmatique atteint 35 à 45 minutes après la prise.<br>2. <strong>Phase d'élimination hépatique (ke)</strong> : élimination logarithmique continue selon votre constante métabolique."
+        }
+    };
+
+    function openTooltip(key) {
+        const modal = document.getElementById('app-tooltip-modal');
+        const title = document.getElementById('tooltip-title');
+        const body = document.getElementById('tooltip-body');
+        const data = TOOLTIP_DATA[key];
+        if (!modal || !title || !body || !data) return;
+
+        title.innerHTML = data.title;
+        body.innerHTML = data.body;
+        modal.classList.add('active');
+    }
+
+    function closeTooltip() {
+        const modal = document.getElementById('app-tooltip-modal');
+        if (modal) modal.classList.remove('active');
     }
 
     function setPreset(mg, lbl, elemId) {
@@ -2928,7 +3024,19 @@
     // --- PWA & SERVICE WORKER ---
     function initPWA() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(err => {
+            navigator.serviceWorker.register('./sw.js', { scope: './' }).then(reg => {
+                reg.update();
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'activated' && !navigator.serviceWorker.controller) {
+                                window.location.reload();
+                            }
+                        });
+                    }
+                });
+            }).catch(err => {
                 console.warn('[SW] Erreur enregistrement:', err);
             });
         }

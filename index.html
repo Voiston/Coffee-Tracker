@@ -924,7 +924,15 @@
 
         /* --- SCIENCE & GUIDE TAB --- */
         .science-card {
-            border-left: 3px solid var(--accent);
+            border: 1px solid rgba(229, 184, 66, 0.22);
+            background: linear-gradient(180deg, rgba(21, 29, 51, 0.6) 0%, rgba(14, 20, 36, 0.85) 100%);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .science-card:hover {
+            border-color: rgba(229, 184, 66, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
         }
 
         .science-text {
@@ -1431,6 +1439,197 @@
             cursor: pointer;
             font-family: inherit;
         }
+
+        /* --- DASHBOARD RESPONSIVE SPLIT & DESKTOP ENHANCEMENTS --- */
+        .dashboard-layout {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .dashboard-sidebar {
+            width: 100%;
+        }
+
+        .dashboard-main {
+            width: 100%;
+        }
+
+        .btn-desktop-add {
+            display: none;
+        }
+
+        /* Minimalist Dark Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(229, 184, 66, 0.4);
+        }
+
+        /* Focus Visibility AA Accessibility */
+        button:focus-visible, a:focus-visible, input:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* --- TABLET ADAPTATION (>= 768px) --- */
+        @media (min-width: 768px) {
+            .sheet-backdrop {
+                align-items: center;
+                padding: 24px;
+            }
+
+            .bottom-sheet {
+                border-radius: var(--radius-xl);
+                border-bottom: 1px solid var(--surface-border);
+                box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 30px rgba(229, 184, 66, 0.1);
+                transform: scale(0.96) translateY(20px);
+                max-height: 85vh;
+            }
+
+            .sheet-backdrop.active .bottom-sheet {
+                transform: scale(1) translateY(0);
+            }
+
+            .sheet-handle {
+                display: none;
+            }
+
+            .chart-wrap {
+                height: 240px;
+            }
+        }
+
+        /* --- DESKTOP VIEWPORT EXPANSION (>= 1024px) --- */
+        @media (min-width: 1024px) {
+            body {
+                background-image: 
+                    radial-gradient(ellipse 70% 40% at 30% 0%, rgba(229, 184, 66, 0.12) 0%, transparent 60%),
+                    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
+                    radial-gradient(ellipse 50% 50% at 20% 90%, rgba(59, 130, 246, 0.04) 0%, transparent 60%);
+            }
+
+            .app-shell {
+                max-width: 1240px;
+                padding: 0 32px 60px;
+            }
+
+            .top-bar {
+                padding: 20px 0 16px;
+                margin-bottom: 24px;
+                background: transparent;
+                border-bottom: 1px solid var(--surface-border);
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                position: relative;
+            }
+
+            .brand-name {
+                font-size: 1.15rem;
+            }
+
+            .brand-sub {
+                font-size: 0.72rem;
+            }
+
+            .dashboard-layout {
+                display: grid;
+                grid-template-columns: 420px 1fr;
+                gap: 32px;
+                align-items: start;
+            }
+
+            .dashboard-sidebar {
+                position: sticky;
+                top: 24px;
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .hero-section {
+                padding: 28px 24px;
+                background: var(--surface-card);
+                border: 1px solid var(--surface-border);
+                border-radius: var(--radius-xl);
+                box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.45);
+            }
+
+            .btn-desktop-add {
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                background: linear-gradient(135deg, var(--accent) 0%, #D4AF37 100%);
+                color: #070A12;
+                border: none;
+                padding: 14px 20px;
+                font-size: 0.88rem;
+                font-weight: 800;
+                letter-spacing: 0.4px;
+                border-radius: var(--radius-md);
+                box-shadow: 0 6px 20px rgba(229, 184, 66, 0.25);
+                cursor: pointer;
+                transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+                font-family: inherit;
+                margin-top: 14px;
+            }
+
+            .btn-desktop-add:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 28px rgba(229, 184, 66, 0.4);
+            }
+
+            .btn-desktop-add:active {
+                transform: scale(0.98);
+            }
+
+            .fab-container {
+                display: none !important;
+            }
+
+            .nav-tabs-wrapper {
+                padding: 0;
+                margin-bottom: 20px;
+            }
+
+            .segmented-nav {
+                padding: 5px;
+            }
+
+            .nav-btn {
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
+
+            .app-card {
+                padding: 24px;
+                border-radius: var(--radius-xl);
+                box-shadow: 0 12px 36px -8px rgba(0, 0, 0, 0.35);
+            }
+
+            .chart-wrap {
+                height: 260px;
+            }
+
+            .cutoff-display-center {
+                padding: 12px 0 18px;
+            }
+
+            .cutoff-clock-hero {
+                font-size: 4rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1469,103 +1668,115 @@
         </div>
     </header>
 
-    <!-- HERO BIOMETRIC DISPLAY -->
-    <section class="hero-section">
-        <div class="hero-halo" id="pulse"></div>
+    <!-- DASHBOARD CONTAINER (RESPONSIVE SPLIT) -->
+    <div class="dashboard-layout">
+        <!-- COCKPIT SIDEBAR -->
+        <aside class="dashboard-sidebar">
+            <section class="hero-section">
+                <div class="hero-halo" id="pulse"></div>
 
-        <div class="dial-container">
-            <svg viewBox="0 0 240 240" width="240" height="240">
-                <!-- Background track arc -->
-                <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="100" stroke-linecap="round" transform="rotate(127.5 120 120)" />
-                <!-- 50mg threshold indicator on dial -->
-                <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(16, 185, 129, 0.55)" stroke-width="10" stroke-dasharray="6 500" stroke-dashoffset="14" stroke-linecap="round" transform="rotate(185 120 120)" />
-                <!-- Active glowing progress arc -->
-                <circle id="gauge-arc" cx="120" cy="120" r="102" fill="none" stroke="url(#accent-gold-gradient)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="480" stroke-linecap="round" transform="rotate(127.5 120 120)" style="transition: stroke-dashoffset 0.55s cubic-bezier(0.16, 1, 0.3, 1);" />
-                
-                <defs>
-                    <linearGradient id="accent-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#FFF3C4" />
-                        <stop offset="60%" stop-color="#E5B842" />
-                        <stop offset="100%" stop-color="#D4AF37" />
-                    </linearGradient>
-                </defs>
-            </svg>
+                <div class="dial-container">
+                    <svg viewBox="0 0 240 240" width="240" height="240">
+                        <!-- Background track arc -->
+                        <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="100" stroke-linecap="round" transform="rotate(127.5 120 120)" />
+                        <!-- 50mg threshold indicator on dial -->
+                        <circle cx="120" cy="120" r="102" fill="none" stroke="rgba(16, 185, 129, 0.55)" stroke-width="10" stroke-dasharray="6 500" stroke-dashoffset="14" stroke-linecap="round" transform="rotate(185 120 120)" />
+                        <!-- Active glowing progress arc -->
+                        <circle id="gauge-arc" cx="120" cy="120" r="102" fill="none" stroke="url(#accent-gold-gradient)" stroke-width="10" stroke-dasharray="480" stroke-dashoffset="480" stroke-linecap="round" transform="rotate(127.5 120 120)" style="transition: stroke-dashoffset 0.55s cubic-bezier(0.16, 1, 0.3, 1);" />
+                        
+                        <defs>
+                            <linearGradient id="accent-gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FFF3C4" />
+                                <stop offset="60%" stop-color="#E5B842" />
+                                <stop offset="100%" stop-color="#D4AF37" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
 
-            <div class="dial-center-box">
-                <span class="dial-kicker">Taux systémique</span>
-                <div class="dial-number-row">
-                    <span class="dial-number" id="mg-display">0.0</span>
-                    <span class="dial-unit">mg</span>
+                    <div class="dial-center-box">
+                        <span class="dial-kicker">Taux systémique</span>
+                        <div class="dial-number-row">
+                            <span class="dial-number" id="mg-display">0.0</span>
+                            <span class="dial-unit">mg</span>
+                        </div>
+                        <div class="dial-status-chip" id="kinetic-status-chip">
+                            <span id="kinetic-txt">● Au repos</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="dial-status-chip" id="kinetic-status-chip">
-                    <span id="kinetic-txt">● Au repos</span>
+
+                <!-- 3 VITAL BIO-TILES -->
+                <div class="bio-tiles-grid">
+                    <div class="bio-tile">
+                        <span class="bio-tile-label" id="bedtime-subtile-lbl">Au coucher (23h)</span>
+                        <span class="bio-tile-value" id="bedtime-subtile-val">
+                            <span id="bedtime-dot">🟢</span> <span id="bedtime-val-txt">0 mg</span>
+                        </span>
+                        <span class="bio-tile-sub" id="bedtime-desc">Idéal pour le sommeil</span>
+                    </div>
+
+                    <div class="bio-tile">
+                        <span class="bio-tile-label">Adénosine bloquée</span>
+                        <span class="bio-tile-value">
+                            <span id="adenosine-pct">0%</span>
+                        </span>
+                        <span class="bio-tile-sub" id="adenosine-desc">Récepteurs A1/A2A</span>
+                    </div>
+
+                    <div class="bio-tile">
+                        <span class="bio-tile-label">Sous 50 mg</span>
+                        <span class="bio-tile-value" id="threshold-subtile-val">
+                            <span id="threshold-val-txt">Déjà serein</span>
+                        </span>
+                        <span class="bio-tile-sub">Seuil sommeil profond</span>
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 3 VITAL BIO-TILES -->
-        <div class="bio-tiles-grid">
-            <div class="bio-tile">
-                <span class="bio-tile-label" id="bedtime-subtile-lbl">Au coucher (23h)</span>
-                <span class="bio-tile-value" id="bedtime-subtile-val">
-                    <span id="bedtime-dot">🟢</span> <span id="bedtime-val-txt">0 mg</span>
-                </span>
-                <span class="bio-tile-sub" id="bedtime-desc">Idéal pour le sommeil</span>
-            </div>
+                <!-- INSTANT 1-TAP QUICK LOG BAR (REVOLUTIONARY SPEED) -->
+                <div class="quick-strip-card">
+                    <div class="quick-strip-header">
+                        <span class="quick-strip-title">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Ajout Éclair en 1 Tap (Maintenant)
+                        </span>
+                        <span class="quick-strip-hint">Enregistrement instantané</span>
+                    </div>
+                    <div class="quick-buttons-row">
+                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕')">
+                            <span class="quick-tap-emoji">☕</span>
+                            <span class="quick-tap-label">Espresso</span>
+                            <span class="quick-tap-mg">70 mg</span>
+                        </button>
+                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕')">
+                            <span class="quick-tap-emoji">☕☕</span>
+                            <span class="quick-tap-label">Double</span>
+                            <span class="quick-tap-mg">140 mg</span>
+                        </button>
+                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡')">
+                            <span class="quick-tap-emoji">⚡</span>
+                            <span class="quick-tap-label">Monster</span>
+                            <span class="quick-tap-mg">160 mg</span>
+                        </button>
+                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵')">
+                            <span class="quick-tap-emoji">🍵</span>
+                            <span class="quick-tap-label">Filtre</span>
+                            <span class="quick-tap-mg">120 mg</span>
+                        </button>
+                    </div>
+                </div>
 
-            <div class="bio-tile">
-                <span class="bio-tile-label">Adénosine bloquée</span>
-                <span class="bio-tile-value">
-                    <span id="adenosine-pct">0%</span>
-                </span>
-                <span class="bio-tile-sub" id="adenosine-desc">Récepteurs A1/A2A</span>
-            </div>
-
-            <div class="bio-tile">
-                <span class="bio-tile-label">Sous 50 mg</span>
-                <span class="bio-tile-value" id="threshold-subtile-val">
-                    <span id="threshold-val-txt">Déjà serein</span>
-                </span>
-                <span class="bio-tile-sub">Seuil sommeil profond</span>
-            </div>
-        </div>
-
-        <!-- INSTANT 1-TAP QUICK LOG BAR (REVOLUTIONARY SPEED) -->
-        <div class="quick-strip-card">
-            <div class="quick-strip-header">
-                <span class="quick-strip-title">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    Ajout Éclair en 1 Tap (Maintenant)
-                </span>
-                <span class="quick-strip-hint">Enregistrement instantané</span>
-            </div>
-            <div class="quick-buttons-row">
-                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕')">
-                    <span class="quick-tap-emoji">☕</span>
-                    <span class="quick-tap-label">Espresso</span>
-                    <span class="quick-tap-mg">70 mg</span>
+                <!-- BOUTON D'AJOUT AVANCÉ (VISIBLE SUR DESKTOP) -->
+                <button type="button" class="btn-desktop-add" onclick="openSheet('sheet-add')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Nouvelle boisson (Heure & Dose)
                 </button>
-                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕')">
-                    <span class="quick-tap-emoji">☕☕</span>
-                    <span class="quick-tap-label">Double</span>
-                    <span class="quick-tap-mg">140 mg</span>
-                </button>
-                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡')">
-                    <span class="quick-tap-emoji">⚡</span>
-                    <span class="quick-tap-label">Monster</span>
-                    <span class="quick-tap-mg">160 mg</span>
-                </button>
-                <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵')">
-                    <span class="quick-tap-emoji">🍵</span>
-                    <span class="quick-tap-label">Filtre</span>
-                    <span class="quick-tap-mg">120 mg</span>
-                </button>
-            </div>
-        </div>
-    </section>
+            </section>
+        </aside>
 
-    <!-- NAVIGATION TABS -->
-    <div class="nav-tabs-wrapper">
+        <!-- MAIN DATA FEED (TABS & ANALYTICS) -->
+        <div class="dashboard-main">
+            <!-- NAVIGATION TABS -->
+            <div class="nav-tabs-wrapper">
         <nav class="segmented-nav">
             <button class="nav-btn active" id="tab-btn-today" onclick="switchMainTab('today')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1804,6 +2015,8 @@
         </div>
 
     </main>
+    </div> <!-- /dashboard-main -->
+    </div> <!-- /dashboard-layout -->
 
     <!-- FLOATING MAIN ACTION BUTTON (FAB) -->
     <div class="fab-container">
@@ -3278,6 +3491,10 @@
     }
 
     window.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('resize', () => {
+        if (chart) chart.resize();
+        if (weeklyChart) weeklyChart.resize();
+    });
 </script>
 </body>
 </html>

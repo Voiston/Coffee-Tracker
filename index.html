@@ -1724,44 +1724,11 @@
                     </div>
 
                     <div class="bio-tile">
-                        <span class="bio-tile-label">Sous 50 mg</span>
-                        <span class="bio-tile-value" id="threshold-subtile-val">
-                            <span id="threshold-val-txt">Déjà serein</span>
+                        <span class="bio-tile-label">Dose du jour</span>
+                        <span class="bio-tile-value" id="today-total-subtile-val">
+                            <span id="today-total-val-txt">0 mg</span>
                         </span>
-                        <span class="bio-tile-sub">Seuil sommeil profond</span>
-                    </div>
-                </div>
-
-                <!-- INSTANT 1-TAP QUICK LOG BAR (REVOLUTIONARY SPEED) -->
-                <div class="quick-strip-card">
-                    <div class="quick-strip-header">
-                        <span class="quick-strip-title">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                            Ajout Éclair en 1 Tap (Maintenant)
-                        </span>
-                        <span class="quick-strip-hint">Enregistrement instantané</span>
-                    </div>
-                    <div class="quick-buttons-row">
-                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(70, 'Espresso', '☕')">
-                            <span class="quick-tap-emoji">☕</span>
-                            <span class="quick-tap-label">Espresso</span>
-                            <span class="quick-tap-mg">70 mg</span>
-                        </button>
-                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(140, 'Double Espresso', '☕☕')">
-                            <span class="quick-tap-emoji">☕☕</span>
-                            <span class="quick-tap-label">Double</span>
-                            <span class="quick-tap-mg">140 mg</span>
-                        </button>
-                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(160, 'Monster 500ml', '⚡')">
-                            <span class="quick-tap-emoji">⚡</span>
-                            <span class="quick-tap-label">Monster</span>
-                            <span class="quick-tap-mg">160 mg</span>
-                        </button>
-                        <button type="button" class="btn-quick-tap" onclick="quickLogInstant(120, 'Café Filtre', '🍵')">
-                            <span class="quick-tap-emoji">🍵</span>
-                            <span class="quick-tap-label">Filtre</span>
-                            <span class="quick-tap-mg">120 mg</span>
-                        </button>
+                        <span class="bio-tile-sub" id="today-total-desc">Max 400 mg EFSA</span>
                     </div>
                 </div>
 
@@ -1806,7 +1773,7 @@
                         <span class="card-title">Heure limite du dernier café</span>
                         <span class="card-subtitle">Pour préserver votre nuit selon votre profil</span>
                     </div>
-                    <span class="card-badge-clean" id="cutoff-drink-tag">Espresso (70 mg)</span>
+                    <span class="card-badge-clean">Seuil sommeil &le; 50 mg</span>
                 </div>
 
                 <!-- SELECTION RAPIDE DE LA BOISSON CIBLE -->
@@ -1954,7 +1921,7 @@
                 <div class="card-header-row">
                     <div class="card-title-group">
                         <span class="card-title">Consommation par jour</span>
-                        <span class="card-subtitle">Ligne de repère santé : 400 mg/j</span>
+                        <span class="card-subtitle">Historique des 7 derniers jours</span>
                     </div>
                     <span class="card-badge-clean">7 jours</span>
                 </div>
@@ -2161,7 +2128,7 @@
             <div style="text-align: center; padding: 10px 0 16px;">
                 <img src="./pwa-512x512.png" alt="Suivi Caféine Pro" style="width: 72px; height: 72px; border-radius: 18px; margin-bottom: 8px; box-shadow: 0 8px 24px rgba(245, 183, 56, 0.35); border: 1px solid rgba(245, 183, 56, 0.4);">
                 <div style="font-size: 1.05rem; font-weight: 800; color: #FFFFFF; letter-spacing: -0.01em;">Suivi Caféine Pro</div>
-                <div style="font-size: 0.72rem; color: var(--accent); margin-top: 3px; font-weight: 600;">✨ Icône vectorielle épurée (Grain cinétique & torréfaction suisse)</div>
+                <div style="font-size: 0.72rem; color: var(--accent); margin-top: 3px; font-weight: 600;">✨ Icône vectorielle dorée (Tasse de café minimaliste)</div>
             </div>
 
             <!-- EXPLICATION BRAVE vs SAFARI -->
@@ -2535,20 +2502,24 @@
             if (bedDesc) bedDesc.innerText = "Risque d'insomnie";
         }
 
-        // Seuil 50mg
-        const thresholdRes = findTimeBelowThreshold(50);
-        const threshValTxt = document.getElementById('threshold-val-txt');
-        if (thresholdRes.alreadyBelow) {
-            threshValTxt.innerText = "Déjà serein";
-            threshValTxt.style.color = 'var(--success)';
-        } else if (thresholdRes.time) {
-            const h = thresholdRes.time.getHours().toString().padStart(2, '0');
-            const m = thresholdRes.time.getMinutes().toString().padStart(2, '0');
-            threshValTxt.innerText = `${h}h${m}`;
-            threshValTxt.style.color = thresholdRes.time < tonight ? 'var(--success)' : 'var(--warning)';
-        } else {
-            threshValTxt.innerText = "> 36 heures";
-            threshValTxt.style.color = 'var(--danger)';
+        // Dose totale consommée aujourd'hui (Distincte du taux résiduel au coucher)
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        const todayEntries = entries.filter(e => new Date(e.d) >= todayStart);
+        const todayTotalMg = todayEntries.reduce((sum, e) => sum + e.mg, 0);
+        const todayCount = todayEntries.length;
+
+        const todayValTxt = document.getElementById('today-total-val-txt');
+        const todayDesc = document.getElementById('today-total-desc');
+        if (todayValTxt) {
+            todayValTxt.innerText = `${Math.round(todayTotalMg)} mg`;
+            if (todayTotalMg <= 400) {
+                todayValTxt.style.color = '#FFFFFF';
+            } else {
+                todayValTxt.style.color = 'var(--danger)';
+            }
+        }
+        if (todayDesc) {
+            todayDesc.innerText = todayCount > 0 ? `${todayCount} prise${todayCount > 1 ? 's' : ''} · Max 400 mg` : "0 prise · Max 400 mg";
         }
 
         updateChart(now);
@@ -3040,7 +3011,7 @@
 
         tlNowTxt.innerText = `${now.getHours()}h${now.getMinutes().toString().padStart(2, '0')}`;
         tlBedTxt.innerText = bedtimeStr;
-        expl.innerText = `Calculé pour un coucher à ${bedtimeStr} (taux résiduel actuel au coucher : ${currentAtBedtime.toFixed(0)} mg / seuil max conseillé : 50 mg).`;
+        expl.innerText = `Dernier créneau pour consommer cette boisson sans dépasser le seuil de 50 mg résiduel à votre coucher (${bedtimeStr}).`;
 
         if (remainingMargin <= 0) {
             timeDisplay.innerText = "Dépassé";
